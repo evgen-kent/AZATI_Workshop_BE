@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { from, map, mergeMap, Observable, of } from 'rxjs';
@@ -32,6 +32,9 @@ export class UsersService {
         }
         return from(this.userModel.findOne({ username })).pipe(
           map((document) => {
+            if (!document) {
+              throw new HttpException('Not Authorized', 401)
+            }
             const { _id, username, password } = document;
             return { userId: _id, username, password };
           }),

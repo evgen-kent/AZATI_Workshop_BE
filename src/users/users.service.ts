@@ -1,27 +1,80 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { from, map, mergeMap, Observable, of } from 'rxjs';
+import { IUser, User, UserDocument } from 'src/schemas/user.schema';
 
-export type IUser = {
-  userId: number;
-  username: string;
-  password?: string;
-};
+type CreateUserDto = Exclude<IUser, 'password'>;
 
 @Injectable()
 export class UsersService {
   private readonly users: IUser[] = [
     {
-      userId: 1,
+      userId: '1',
       username: 'john',
       password: '123123123',
     },
     {
-      userId: 2,
+      userId: '2',
       username: 'maria',
       password: '123123123',
     },
   ];
 
-  async findOne(username: string): Promise<IUser | undefined> {
-    return this.users.find(user => user.username === username);
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {
+  }
+
+  findOneWithPassword(username: string): Observable<IUser | undefined> {
+    return of(this.users.find(user => user.username === username)).pipe(
+      mergeMap((user) => {
+        if (user) {
+          return of(user);
+        }
+        return from(this.userModel.findOne({ username })).pipe(
+          map((document) => {
+            const { _id, username, password } = document;
+            return { userId: _id, username, password };
+          }),
+        );
+      }),
+    );
+  }
+
+  createUser(createUserDto: CreateUserDto): Observable<UserDocument> {
+    const { username, password } = createUserDto;
+
+    const createdUser = new this.userModel({ username, password });
+    return from(createdUser.save());
+  }
+
+  getUsers(start: number, limit: number): Observable<Omit<User, 'password'>[]> {
+    return from(this.userModel.find().skip(start).limit(limit).exec()).pipe(
+      map((users) => users.map(this.obfuscateUser)),
+    );
+  }
+
+  findUser(_id: string): Observable<Omit<User, 'password'>> {
+    return from(this.userModel.findOne({ _id })).pipe(
+      map(this.obfuscateUser),
+    );
+  }
+
+  deleteUser(userId: string): Observable<{ result: string }> {
+    return from(this.userModel.deleteOne({ _id: userId })).pipe(
+      map(() => ({ result: 'ok' })),
+    );
+  }
+
+  updateUser(userId: string, user: Partial<IUser>): Observable<UserDocument> {
+    const { username, password } = user;
+    const body = { username, password };
+    // @ts-ignore
+    return from(this.userModel.findOneAndUpdate({ _id: userId }, body)).pipe(
+      map(this.obfuscateUser),
+    );
+  }
+
+  obfuscateUser({ _id, username }: UserDocument): Omit<IUser, 'password'> {
+    return { userId: _id, username };
   }
 }

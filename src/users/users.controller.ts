@@ -34,7 +34,7 @@ export class UsersController {
   }
 
   @Patch(':id')
-  updateUser(@Param('id') userId: string, @Body() user: Partial<IUser>): Observable<User> {
+  updateUser(@Param('id') userId: string, @Body() user: Partial<IUser>): Observable<Partial<User>> {
     return this.usersService.updateUser(userId, user);
   }
 }

@@ -44,9 +44,9 @@ export class UsersService {
   }
 
   createUser(createUserDto: CreateUserDto): Observable<UserDocument> {
-    const { username, password } = createUserDto;
+    const { username, password, email, site, phone } = createUserDto;
 
-    const createdUser = new this.userModel({ username, password });
+    const createdUser = new this.userModel({ username, password, email, site, phone });
     return from(createdUser.save());
   }
 
@@ -68,16 +68,15 @@ export class UsersService {
     );
   }
 
-  updateUser(userId: string, user: Partial<IUser>): Observable<UserDocument> {
-    const { username, password } = user;
-    const body = { username, password };
-    // @ts-ignore
-    return from(this.userModel.findOneAndUpdate({ _id: userId }, body)).pipe(
+  updateUser(userId: string, user: Partial<IUser>): Observable<Partial<UserDocument>> {
+    const { username, password, email, site, phone } = user;
+    const body = { username, password, email, site, phone };
+    return from(this.userModel.findOneAndUpdate({ _id: userId }, body, {new: true})).pipe(
       map(this.obfuscateUser),
     );
   }
 
-  obfuscateUser({ _id, username }: UserDocument): Omit<IUser, 'password'> {
-    return { userId: _id, username };
+  obfuscateUser({ _id, username, email, site, phone }: UserDocument): Omit<IUser, 'password'> {
+    return { userId: _id, username, email, site, phone };
   }
 }

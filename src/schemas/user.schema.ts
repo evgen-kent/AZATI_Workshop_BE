@@ -1,10 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { Optional } from '@nestjs/common';
 
 export type IUser = {
   userId: string;
   username: string;
   password?: string;
+  email?: string;
+  phone?: string;
+  site?: string;
 };
 
 export type UserDocument = User & Document;
@@ -16,6 +20,18 @@ export class User {
 
   @Prop()
   password: string;
+
+  @Prop()
+  @Optional()
+  email?: string;
+
+  @Prop()
+  @Optional()
+  phone?: string;
+
+  @Prop()
+  @Optional()
+  site?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

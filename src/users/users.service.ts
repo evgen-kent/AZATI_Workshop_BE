@@ -33,7 +33,7 @@ export class UsersService {
         return from(this.userModel.findOne({ username })).pipe(
           map((document) => {
             if (!document) {
-              throw new HttpException('Not Authorized', 401)
+              throw new HttpException('Not Authorized', 401);
             }
             const { _id, username, password } = document;
             return { userId: _id, username, password };
@@ -44,9 +44,9 @@ export class UsersService {
   }
 
   createUser(createUserDto: CreateUserDto): Observable<UserDocument> {
-    const { username, password, email, site, phone } = createUserDto;
+    const { username, password, email, site, phone, avatar } = createUserDto;
 
-    const createdUser = new this.userModel({ username, password, email, site, phone });
+    const createdUser = new this.userModel({ username, password, email, site, phone, avatar });
     return from(createdUser.save());
   }
 
@@ -69,14 +69,14 @@ export class UsersService {
   }
 
   updateUser(userId: string, user: Partial<IUser>): Observable<Partial<UserDocument>> {
-    const { username, password, email, site, phone } = user;
-    const body = { username, password, email, site, phone };
-    return from(this.userModel.findOneAndUpdate({ _id: userId }, body, {new: true})).pipe(
+    const { username, password, email, site, phone, avatar } = user;
+    const body = { username, password, email, site, phone, avatar };
+    return from(this.userModel.findOneAndUpdate({ _id: userId }, body, { new: true })).pipe(
       map(this.obfuscateUser),
     );
   }
 
-  obfuscateUser({ _id, username, email, site, phone }: UserDocument): Omit<IUser, 'password'> {
-    return { userId: _id, username, email, site, phone };
+  obfuscateUser({ _id, username, email, site, phone, avatar }: UserDocument): Omit<IUser, 'password'> {
+    return { userId: _id, username, email, site, phone, avatar };
   }
 }

@@ -9,6 +9,7 @@ export type IUser = {
   email?: string;
   phone?: string;
   site?: string;
+  avatar?: string;
 };
 
 export type UserDocument = User & Document;
@@ -32,6 +33,10 @@ export class User {
   @Prop()
   @Optional()
   site?: string;
+
+  @Prop()
+  @Optional()
+  avatar?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

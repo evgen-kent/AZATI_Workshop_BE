@@ -6,8 +6,10 @@ export interface IProduct {
   productId: string;
   name: string;
   manufacturer: string;
-  price: number;
-  in_stock?: boolean;
+  width?: number;
+  height?: number;
+  depth?: number;
+  image?: string;
   country_of_origin?: string;
 }
 
@@ -22,11 +24,20 @@ export class Product {
   manufacturer: string;
 
   @Prop()
-  price: number;
+  @Optional()
+  width?: number;
 
   @Prop()
   @Optional()
-  in_stock?: boolean;
+  height?: number;
+
+  @Prop()
+  @Optional()
+  depth?: number;
+
+  @Prop()
+  @Optional()
+  image?: string;
 
   @Prop()
   @Optional()

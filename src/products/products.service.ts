@@ -14,16 +14,7 @@ export class ProductsService {
   ) {}
 
   createOne(product: CreateProductDTO): Observable<ProductDocument> {
-    const { name, price, manufacturer, country_of_origin, in_stock } = product;
-
-    const newProduct = new this.productModel({
-      name,
-      price,
-      manufacturer,
-      country_of_origin,
-      in_stock,
-    });
-
+    const newProduct = new this.productModel(product);
     return from(newProduct.save());
   }
 
@@ -46,11 +37,8 @@ export class ProductsService {
     _id: string,
     payload: Partial<IProduct>,
   ): Observable<ProductDocument> {
-    const { name, manufacturer, in_stock, price, country_of_origin } = payload;
-    const updated = { name, manufacturer, in_stock, price, country_of_origin };
-
     return from(
-      this.productModel.findOneAndUpdate({ _id }, updated, { new: true }),
+      this.productModel.findOneAndUpdate({ _id }, payload, { new: true }),
     );
   }
 }

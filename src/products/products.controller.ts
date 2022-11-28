@@ -19,30 +19,30 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
-  @Get('')
+  @Get()
   getAll(
-    @Query('start') start: number,
-    @Query('limit') limit: number,
+    @Query('start') start?: number,
+    @Query('limit') limit?: number,
   ): Observable<ProductDocument[]> {
     return this.productsService.getAll(start, limit);
   }
 
-  @Get('/:id')
+  @Get(':id')
   getById(@Param('id') id: string): Observable<ProductDocument> {
     return this.productsService.getById(id);
   }
 
-  @Post('')
+  @Post()
   createOne(@Body() body: IProduct): Observable<ProductDocument> {
     return this.productsService.createOne(body);
   }
 
-  @Delete('/:id')
-  deleteById(@Param('id') id: string): Observable<boolean> {
+  @Delete(':id')
+  deleteById(@Param('id') id: string): Observable<{ result: string }> {
     return this.productsService.deleteOne(id);
   }
 
-  @Patch('/:id')
+  @Patch(':id')
   updateOne(
     @Param('id') id: string,
     @Body() payload: Partial<IProduct>,

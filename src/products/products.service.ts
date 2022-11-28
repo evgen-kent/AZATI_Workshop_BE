@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { IProduct, Product, ProductDocument } from '../schemas/product.schema';
 import { Model } from 'mongoose';
-import { catchError, from, Observable, of, switchMap } from 'rxjs';
+import { from, map, Observable } from 'rxjs';
 
 type CreateProductDTO = Exclude<IProduct, 'productId'>;
 
@@ -18,7 +18,7 @@ export class ProductsService {
     return from(newProduct.save());
   }
 
-  getAll(start: number, limit: number): Observable<ProductDocument[]> {
+  getAll(start = 0, limit = 50): Observable<ProductDocument[]> {
     return from(this.productModel.find().skip(start).limit(limit).exec());
   }
 
@@ -26,10 +26,11 @@ export class ProductsService {
     return from(this.productModel.findOne({ _id }));
   }
 
-  deleteOne(_id: string): Observable<boolean> {
+  deleteOne(_id: string): Observable<{ result: string }> {
     return from(this.productModel.deleteOne({ _id })).pipe(
-      switchMap(() => of(true)),
-      catchError(() => of(false)),
+      map(() => {
+        return { result: 'ok' };
+      }),
     );
   }
 

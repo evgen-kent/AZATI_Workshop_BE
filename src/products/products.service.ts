@@ -13,6 +13,10 @@ export class ProductsService {
     private readonly productModel: Model<ProductDocument>,
   ) {}
 
+  count(): Observable<number> {
+    return <Observable<number>>from(this.productModel.count());
+  }
+
   createOne(product: CreateProductDTO): Observable<ProductDocument> {
     const newProduct = new this.productModel(product);
     return from(newProduct.save());

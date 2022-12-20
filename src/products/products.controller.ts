@@ -8,11 +8,12 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
+import { map, Observable, switchMap } from 'rxjs';
 import { IProduct, ProductDocument } from '../schemas/product.schema';
 import { ProductsService } from './products.service';
 import { Patch } from '@nestjs/common/decorators/http/request-mapping.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { IPaginatedResponse } from '../interfaces/paginated-response.interface';
 
 @Controller('products')
 @UseGuards(JwtAuthGuard)
@@ -21,10 +22,23 @@ export class ProductsController {
 
   @Get()
   getAll(
-    @Query('start') start?: number,
-    @Query('limit') limit?: number,
-  ): Observable<ProductDocument[]> {
-    return this.productsService.getAll(start, limit);
+    @Query('start') start_query?: string,
+    @Query('limit') limit_query?: string,
+  ): Observable<IPaginatedResponse<ProductDocument[]>> {
+    const start = parseInt(start_query) || undefined;
+    const limit = parseInt(limit_query) || undefined;
+
+    let total = 0;
+
+    return this.productsService.count().pipe(
+      switchMap((count) => {
+        total = count;
+        return this.productsService.getAll(start, limit);
+      }),
+      map((products) => {
+        return { total, start, limit, data: products };
+      }),
+    );
   }
 
   @Get(':id')

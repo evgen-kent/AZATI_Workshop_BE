@@ -21,11 +21,14 @@ export class UsersService {
     },
   ];
 
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+
+  count(): Observable<number> {
+    return <Observable<number>>from(this.userModel.count());
   }
 
   findOneWithPassword(username: string): Observable<IUser | undefined> {
-    return of(this.users.find(user => user.username === username)).pipe(
+    return of(this.users.find((user) => user.username === username)).pipe(
       mergeMap((user) => {
         if (user) {
           return of(user);
@@ -55,9 +58,7 @@ export class UsersService {
   }
 
   findUser(_id: string): Observable<Omit<User, 'password'>> {
-    return from(this.userModel.findOne({ _id })).pipe(
-      map(this.obfuscateUser),
-    );
+    return from(this.userModel.findOne({ _id })).pipe(map(this.obfuscateUser));
   }
 
   deleteUser(userId: string): Observable<{ result: string }> {
@@ -66,13 +67,23 @@ export class UsersService {
     );
   }
 
-  updateUser(userId: string, user: Partial<IUser>): Observable<Partial<UserDocument>> {
-    return from(this.userModel.findOneAndUpdate({ _id: userId }, user, { new: true })).pipe(
-      map(this.obfuscateUser),
-    );
+  updateUser(
+    userId: string,
+    user: Partial<IUser>,
+  ): Observable<Partial<UserDocument>> {
+    return from(
+      this.userModel.findOneAndUpdate({ _id: userId }, user, { new: true }),
+    ).pipe(map(this.obfuscateUser));
   }
 
-  obfuscateUser({ _id, username, email, site, phone, avatar }: UserDocument): Omit<IUser, 'password'> {
+  obfuscateUser({
+    _id,
+    username,
+    email,
+    site,
+    phone,
+    avatar,
+  }: UserDocument): Omit<IUser, 'password'> {
     return { userId: _id, username, email, site, phone, avatar };
   }
 }

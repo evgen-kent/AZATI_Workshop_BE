@@ -8,7 +8,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { map, Observable, switchMap } from 'rxjs';
+import { forkJoin, map, mergeMap, Observable, of } from 'rxjs';
 import { IProduct, ProductDocument } from '../schemas/product.schema';
 import { ProductsService } from './products.service';
 import { Patch } from '@nestjs/common/decorators/http/request-mapping.decorator';
@@ -28,14 +28,11 @@ export class ProductsController {
     const start = parseInt(start_query) || undefined;
     const limit = parseInt(limit_query) || undefined;
 
-    let total = 0;
-
     return this.productsService.count().pipe(
-      switchMap((count) => {
-        total = count;
-        return this.productsService.getAll(start, limit);
+      mergeMap((total) => {
+        return forkJoin([this.productsService.getAll(start, limit), of(total)]);
       }),
-      map((products) => {
+      map(([products, total]) => {
         return { total, start, limit, data: products };
       }),
     );

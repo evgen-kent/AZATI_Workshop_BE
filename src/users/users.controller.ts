@@ -8,7 +8,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { map, Observable, switchMap } from 'rxjs';
+import { forkJoin, map, mergeMap, Observable, of } from 'rxjs';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { IUser, User } from '../schemas/user.schema';
 import { UsersService } from './users.service';
@@ -37,14 +37,12 @@ export class UsersController {
   ): Observable<IPaginatedResponse<Omit<User, 'password'>[]>> {
     const start = parseInt(start_query) || undefined;
     const limit = parseInt(limit_query) || undefined;
-    let total = 0;
 
     return this.usersService.count().pipe(
-      switchMap((count) => {
-        total = count;
-        return this.usersService.getUsers(start, limit);
-      }),
-      map((users) => {
+      mergeMap((total) =>
+        forkJoin([this.usersService.getUsers(start, limit), of(total)]),
+      ),
+      map(([users, total]) => {
         return { total, start, limit, data: users };
       }),
     );

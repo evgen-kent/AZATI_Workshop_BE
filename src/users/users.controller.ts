@@ -1,14 +1,5 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
-import { forkJoin, map, mergeMap, Observable, of } from 'rxjs';
+import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { forkJoin, map, Observable } from 'rxjs';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { IUser, User } from '../schemas/user.schema';
 import { UsersService } from './users.service';
@@ -18,7 +9,8 @@ import { IPaginatedResponse } from '../interfaces/paginated-response.interface';
 @Controller('users')
 @UseGuards(JwtAuthGuard)
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) {
+  }
 
   @Post()
   createUser(@Body() user: IUser): Observable<User> {
@@ -38,12 +30,12 @@ export class UsersController {
     const start = parseInt(start_query) || undefined;
     const limit = parseInt(limit_query) || undefined;
 
-    return this.usersService.count().pipe(
-      mergeMap((total) =>
-        forkJoin([this.usersService.getUsers(start, limit), of(total)]),
-      ),
-      map(([users, total]) => {
-        return { total, start, limit, data: users };
+    return forkJoin([
+      this.usersService.getUsers(start, limit),
+      this.usersService.count(),
+    ]).pipe(
+      map(([data, total]) => {
+        return { total, start, limit, data };
       }),
     );
   }

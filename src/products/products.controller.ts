@@ -1,14 +1,5 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
-import { forkJoin, map, mergeMap, Observable, of } from 'rxjs';
+import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { forkJoin, map, Observable } from 'rxjs';
 import { IProduct, ProductDocument } from '../schemas/product.schema';
 import { ProductsService } from './products.service';
 import { Patch } from '@nestjs/common/decorators/http/request-mapping.decorator';
@@ -18,7 +9,8 @@ import { IPaginatedResponse } from '../interfaces/paginated-response.interface';
 @Controller('products')
 @UseGuards(JwtAuthGuard)
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(private readonly productsService: ProductsService) {
+  }
 
   @Get()
   getAll(
@@ -28,12 +20,12 @@ export class ProductsController {
     const start = parseInt(start_query) || undefined;
     const limit = parseInt(limit_query) || undefined;
 
-    return this.productsService.count().pipe(
-      mergeMap((total) => {
-        return forkJoin([this.productsService.getAll(start, limit), of(total)]);
-      }),
-      map(([products, total]) => {
-        return { total, start, limit, data: products };
+    return forkJoin([
+      this.productsService.getAll(start, limit),
+      this.productsService.count(),
+    ]).pipe(
+      map(([data, total]) => {
+        return { total, start, limit, data };
       }),
     );
   }

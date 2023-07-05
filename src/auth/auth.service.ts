@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { lastValueFrom } from 'rxjs';
-import { IUser } from 'src/schemas/user.schema';
+import { IUser } from '../schemas/user.schema';
 
 @Injectable()
 export class AuthService {

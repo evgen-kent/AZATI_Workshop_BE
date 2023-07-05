@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { forkJoin, map, Observable } from 'rxjs';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { IUser, User } from '../schemas/user.schema';
 import { UsersService } from './users.service';
 import { Patch } from '@nestjs/common/decorators/http/request-mapping.decorator';

@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { forkJoin, map, Observable } from 'rxjs';
 import { IProduct, ProductDocument } from '../schemas/product.schema';
 import { ProductsService } from './products.service';
@@ -9,8 +18,7 @@ import { IPaginatedResponse } from '../interfaces/paginated-response.interface';
 @Controller('products')
 @UseGuards(JwtAuthGuard)
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {
-  }
+  constructor(private readonly productsService: ProductsService) {}
 
   @Get()
   getAll(

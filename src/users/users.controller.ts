@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { forkJoin, map, Observable } from 'rxjs';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { IUser, User } from '../schemas/user.schema';
@@ -9,8 +18,7 @@ import { IPaginatedResponse } from '../interfaces/paginated-response.interface';
 @Controller('users')
 @UseGuards(JwtAuthGuard)
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {
-  }
+  constructor(private readonly usersService: UsersService) {}
 
   @Post()
   createUser(@Body() user: IUser): Observable<User> {

@@ -8,8 +8,7 @@ export class AppController {
   constructor(
     private readonly authService: AuthService,
     private readonly appService: AppService,
-  ) {
-  }
+  ) {}
 
   @Get()
   getHello(): string {

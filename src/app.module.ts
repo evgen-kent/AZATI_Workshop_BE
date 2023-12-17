@@ -8,7 +8,6 @@ import { MulterModule } from '@nestjs/platform-express';
 import { ImagesController } from './modules/images/images.controller';
 import { ProductsModule } from './modules/products/products.module';
 import { ENV } from '../config/env.interface';
-import './utils/mongoose.logger';
 
 @Module({
   imports: [

@@ -10,13 +10,12 @@ import {
 } from '@nestjs/common';
 import { forkJoin, map, Observable } from 'rxjs';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { IUser, User } from '../schemas/user.schema';
+import { IUser, User } from '../../schemas/user.schema';
 import { UsersService } from './users.service';
 import { Patch } from '@nestjs/common/decorators/http/request-mapping.decorator';
-import { IPaginatedResponse } from '../interfaces/paginated-response.interface';
+import { IPaginatedResponse } from '../../interfaces/paginated-response.interface';
 
 @Controller('users')
-@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -48,11 +47,13 @@ export class UsersController {
     );
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   deleteUser(@Param('id') userId: string): Observable<{ result: string }> {
     return this.usersService.deleteUser(userId);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   updateUser(
     @Param('id') userId: string,

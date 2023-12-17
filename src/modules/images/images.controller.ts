@@ -11,7 +11,7 @@ import {
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { editFileName, imageFileFilter } from '../utils/file-upload-utils';
+import { editFileName, imageFileFilter } from '../../utils/file-upload-utils';
 
 @Controller('images')
 @UseGuards(JwtAuthGuard)

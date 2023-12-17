@@ -2,15 +2,23 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
 import { MulterModule } from '@nestjs/platform-express';
-import { ImagesController } from './images/images.controller';
-import { ProductsModule } from './products/products.module';
+import { ImagesController } from './modules/images/images.controller';
+import { ProductsModule } from './modules/products/products.module';
+import { ENV } from '../config/env.interface';
+import './utils/mongoose.logger';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost/nest'),
+    MongooseModule.forRootAsync({
+      useFactory: () => ({
+        uri: ENV.MONGODB_CLOUD_URI,
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      }),
+    }),
     AuthModule,
     UsersModule,
     MulterModule.register({ dest: './files' }),

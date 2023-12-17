@@ -9,11 +9,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { forkJoin, map, Observable } from 'rxjs';
-import { IProduct, ProductDocument } from '../schemas/product.schema';
+import { IProduct, ProductDocument } from '../../schemas/product.schema';
 import { ProductsService } from './products.service';
 import { Patch } from '@nestjs/common/decorators/http/request-mapping.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { IPaginatedResponse } from '../interfaces/paginated-response.interface';
+import { IPaginatedResponse } from '../../interfaces/paginated-response.interface';
 
 @Controller('products')
 @UseGuards(JwtAuthGuard)

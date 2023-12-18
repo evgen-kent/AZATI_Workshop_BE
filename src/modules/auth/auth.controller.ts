@@ -1,7 +1,7 @@
 import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
-import { IUser, User } from '../schemas/user.schema';
+import { IUser, User } from '../../schemas/user.schema';
 import { Observable } from 'rxjs';
 import { UsersService } from '../users/users.service';
 

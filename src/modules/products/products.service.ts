@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { IProduct, Product, ProductDocument } from '../schemas/product.schema';
+import { IProduct, Product, ProductDocument } from '../../schemas/product.schema';
 import { Model } from 'mongoose';
 import { from, map, Observable } from 'rxjs';
 

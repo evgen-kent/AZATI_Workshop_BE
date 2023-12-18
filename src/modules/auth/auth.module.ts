@@ -16,10 +16,8 @@ import { AuthController } from './auth.controller';
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,
-    })],
-  exports: [
-    AuthService,
+    }),
   ],
+  exports: [AuthService],
 })
-export class AuthModule {
-}
+export class AuthModule {}

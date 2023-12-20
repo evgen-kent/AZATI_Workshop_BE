@@ -5,13 +5,8 @@ import { ENV } from '../config/env.interface';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
-
-  await app.listen(ENV.PORT, () => {
-    const server = app.getHttpServer();
-    const address = server.address();
-    const ip = address?.address === '::' ? 'localhost' : address?.address;
-
-    console.log(`Server running on: http://${ip}:${ENV.PORT}`);
+  await app.listen(ENV.PORT, ENV.HOST, () => {
+    console.log(`Server running on: ${ENV.PROTOCOL}://${ENV.HOST}:${ENV.PORT}`);
   });
 }
 

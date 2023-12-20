@@ -8,6 +8,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { ImagesController } from './modules/images/images.controller';
 import { ProductsModule } from './modules/products/products.module';
 import { ENV } from '../config/env.interface';
+import { BrandsModule } from './modules/brands/brands.module';
 
 @Module({
   imports: [
@@ -18,10 +19,13 @@ import { ENV } from '../config/env.interface';
         useUnifiedTopology: true,
       }),
     }),
+    MulterModule.register({ dest: './files' }),
+
     AuthModule,
     UsersModule,
-    MulterModule.register({ dest: './files' }),
+
     ProductsModule,
+    BrandsModule,
   ],
   controllers: [AppController, ImagesController],
   providers: [AppService],

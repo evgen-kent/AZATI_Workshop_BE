@@ -19,11 +19,6 @@ import { IPaginatedResponse } from '../../interfaces/paginated-response.interfac
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  createUser(@Body() user: IUser): Observable<User> {
-    return this.usersService.createUser(user);
-  }
-
   @Get(':id')
   getUser(@Param('id') id: string): Observable<Omit<User, 'password'>> {
     return this.usersService.findUser(id);
@@ -49,16 +44,16 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  deleteUser(@Param('id') userId: string): Observable<{ result: string }> {
-    return this.usersService.deleteUser(userId);
+  deleteUser(@Param('id') id: string): Observable<{ result: string }> {
+    return this.usersService.deleteUser(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   updateUser(
-    @Param('id') userId: string,
+    @Param('id') id: string,
     @Body() user: Partial<IUser>,
   ): Observable<Partial<User>> {
-    return this.usersService.updateUser(userId, user);
+    return this.usersService.updateUser(id, user);
   }
 }

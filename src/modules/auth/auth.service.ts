@@ -3,6 +3,7 @@ import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { lastValueFrom } from 'rxjs';
 import { IUser } from '../../schemas/user.schema';
+import { hashPasswordAsync } from '../../utils/hash-password';
 
 @Injectable()
 export class AuthService {
@@ -11,11 +12,14 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, pass: string): Promise<IUser> {
+  async validateUserAsync(
+    email: string,
+    pass: string,
+  ): Promise<Omit<IUser, 'password'>> {
     const user = await lastValueFrom(
-      this.usersService.findOneWithPassword(username),
+      this.usersService.findOneWithPassword(email),
     );
-    if (user && user.password === pass) {
+    if (user && user.password === (await hashPasswordAsync(pass))) {
       const { password, ...result } = user;
       return result;
     }
@@ -23,7 +27,7 @@ export class AuthService {
   }
 
   login(user: IUser): { access_token: string } {
-    const payload = { username: user.username, sub: user.userId };
+    const payload = { email: user.email, sub: user.id };
     return {
       access_token: this.jwtService.sign(payload),
     };

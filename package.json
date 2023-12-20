@@ -28,6 +28,7 @@
     "@nestjs/mongoose": "^9.0.2",
     "@nestjs/passport": "^8.1.0",
     "@nestjs/platform-express": "^8.0.0",
+    "crypto": "^1.0.1",
     "dotenv": "^16.3.1",
     "mongo-gridfs": "^1.1.0",
     "mongoose": "^6.1.7",

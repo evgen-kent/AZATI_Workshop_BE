@@ -1,12 +1,16 @@
 import {
+  Body,
   Controller,
   Headers,
   Post,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { IUser, User } from '../../schemas/user.schema';
 import { from, map, Observable } from 'rxjs';
 import { UsersService } from '../users/users.service';
+import { LocalAuthGuard } from './local-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -15,23 +19,18 @@ export class AuthController {
     private readonly usersService: UsersService,
   ) {}
 
-  //@UseGuards(LocalAuthGuard)
+  @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(
-    @Headers('password') password: string,
-    @Headers('email') email: string,
-  ): Promise<{ access_token: string }> {
-    const user = await this.authService.validateUserAsync(email, password);
-    return this.authService.login(user);
+  login(@Request() req): { access_token: string } {
+    return this.authService.login(req.user);
   }
 
   @Post('registration')
   registration(
-    @Headers('password') password: string,
-    @Headers('email') email: string,
+    @Body() user: IUser,
   ): Observable<IUser | { accessToken: string }> {
-    const user = this.usersService.createUser(email, password);
-    return from(user).pipe(
+    const createdUser = this.usersService.createUser(user.email, user.password);
+    return from(createdUser).pipe(
       map((user) => {
         return {
           id: user.id,

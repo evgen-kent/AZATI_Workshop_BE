@@ -10,7 +10,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super();
   }
 
-  async validateAsync(
+  async validate(
     username: string,
     password: string,
   ): Promise<Omit<IUser, 'password'>> {

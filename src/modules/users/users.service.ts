@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { catchError, from, map, mergeMap, Observable, of } from 'rxjs';
+import { catchError, from, map, Observable, of, switchMap } from 'rxjs';
 import { IUser, User, UserDocument } from '../../schemas/user.schema';
 
 type CreateUserDto = Exclude<IUser, 'password'>;
@@ -37,7 +37,7 @@ export class UsersService {
     );
 
     const findUserInDB$ = from(this.userModel.findOne({ username })).pipe(
-      mergeMap((document) => {
+      switchMap((document) => {
         if (!document) {
           throw new UnauthorizedException();
         }
@@ -47,7 +47,7 @@ export class UsersService {
     );
     //Combining two user search methods
     return findUserInMemory$.pipe(
-      mergeMap((user) => (user ? of(user) : findUserInDB$)),
+      switchMap((user) => (user ? of(user) : findUserInDB$)),
     );
   }
 

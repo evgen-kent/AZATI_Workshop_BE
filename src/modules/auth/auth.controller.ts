@@ -1,24 +1,8 @@
-import {
-  Body,
-  Controller,
-  InternalServerErrorException,
-  Post,
-  Request,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
 import { IUser, User } from '../../schemas/user.schema';
-import {
-  catchError,
-  forkJoin,
-  from,
-  map,
-  mergeMap,
-  Observable,
-  of,
-  switchMap,
-} from 'rxjs';
+import { forkJoin, from, Observable, of, switchMap } from 'rxjs';
 import { UsersService } from '../users/users.service';
 
 @Controller('auth')
@@ -48,7 +32,7 @@ export class AuthController {
     const token$ = createdUser$.pipe(
       switchMap((user) => of(this.authService.login(user))),
     );
-    
+
     return forkJoin({ token: token$, user: createdUser$ });
   }
 }

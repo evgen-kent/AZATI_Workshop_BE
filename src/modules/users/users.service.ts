@@ -1,4 +1,8 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { from, map, mergeMap, Observable, of } from 'rxjs';
@@ -28,21 +32,22 @@ export class UsersService {
   }
 
   findOneWithPassword(username: string): Observable<IUser | undefined> {
-    return of(this.users.find((user) => user.username === username)).pipe(
-      mergeMap((user) => {
-        if (user) {
-          return of(user);
+    const findUserInMemory$ = of(
+      this.users.find((user) => user.username === username),
+    );
+
+    const findUserInDB$ = from(this.userModel.findOne({ username })).pipe(
+      mergeMap((document) => {
+        if (!document) {
+          throw new UnauthorizedException();
         }
-        return from(this.userModel.findOne({ username })).pipe(
-          map((document) => {
-            if (!document) {
-              throw new HttpException('Not Authorized', 401);
-            }
-            const { _id, username, password } = document;
-            return { userId: _id, username, password };
-          }),
-        );
+        const { _id, username } = document;
+        return of({ userId: _id, username });
       }),
+    );
+    //Combining two user search methods
+    return findUserInMemory$.pipe(
+      mergeMap((user) => (user ? of(user) : findUserInDB$)),
     );
   }
 

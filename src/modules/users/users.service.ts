@@ -1,11 +1,12 @@
 import {
+  BadRequestException,
   HttpException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { from, map, mergeMap, Observable, of } from 'rxjs';
+import { catchError, from, map, mergeMap, Observable, of } from 'rxjs';
 import { IUser, User, UserDocument } from '../../schemas/user.schema';
 
 type CreateUserDto = Exclude<IUser, 'password'>;
@@ -53,7 +54,18 @@ export class UsersService {
 
   createUser(createUserDto: CreateUserDto): Observable<UserDocument> {
     const createdUser = new this.userModel(createUserDto);
-    return from(createdUser.save());
+    return from(createdUser.save()).pipe(
+      catchError((error) => {
+        if (
+          error.code === 11000 &&
+          error.keyPattern &&
+          error.keyPattern.username
+        ) {
+          throw new BadRequestException('Username already exists.');
+        }
+        throw new BadRequestException('Could not create user.');
+      }),
+    );
   }
 
   getUsers(start: number, limit: number): Observable<Omit<User, 'password'>[]> {

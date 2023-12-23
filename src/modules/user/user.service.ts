@@ -6,50 +6,13 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { catchError, from, map, Observable, of, switchMap } from 'rxjs';
-import { IUser, User, UserDocument } from '../../schemas/user.schema';
+import { IUser, User, UserDocument } from '../../database/schemas/user.schema';
 
-type CreateUserDto = Exclude<IUser, 'password'>;
+type CreateUserDto = Omit<IUser, 'id'>;
 
 @Injectable()
-export class UsersService {
-  private readonly users: IUser[] = [
-    {
-      userId: '1',
-      username: 'john',
-      password: '123123123',
-    },
-    {
-      userId: '2',
-      username: 'maria',
-      password: '123123123',
-    },
-  ];
-
+export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
-
-  count(): Observable<number> {
-    return <Observable<number>>from(this.userModel.count());
-  }
-
-  findOneWithPassword(username: string): Observable<IUser | undefined> {
-    const findUserInMemory$ = of(
-      this.users.find((user) => user.username === username),
-    );
-
-    const findUserInDB$ = from(this.userModel.findOne({ username })).pipe(
-      switchMap((document) => {
-        if (!document) {
-          throw new UnauthorizedException();
-        }
-        const { _id, username } = document;
-        return of({ userId: _id, username });
-      }),
-    );
-    //Combining two user search methods
-    return findUserInMemory$.pipe(
-      switchMap((user) => (user ? of(user) : findUserInDB$)),
-    );
-  }
 
   createUser(createUserDto: CreateUserDto): Observable<UserDocument> {
     const createdUser = new this.userModel(createUserDto);
@@ -73,8 +36,12 @@ export class UsersService {
     );
   }
 
-  findUser(_id: string): Observable<Omit<User, 'password'>> {
+  findUserById(_id: string): Observable<Omit<User, 'password'>> {
     return from(this.userModel.findOne({ _id })).pipe(map(this.obfuscateUser));
+  }
+
+  findUserByEmail(email: string): Observable<UserDocument> {
+    return from(this.userModel.findOne({ email }));
   }
 
   deleteUser(userId: string): Observable<{ result: string }> {
@@ -92,14 +59,7 @@ export class UsersService {
     ).pipe(map(this.obfuscateUser));
   }
 
-  obfuscateUser({
-    _id,
-    username,
-    email,
-    site,
-    phone,
-    avatar,
-  }: UserDocument): Omit<IUser, 'password'> {
-    return { userId: _id, username, email, site, phone, avatar };
+  obfuscateUser({ _id, email }: UserDocument): Omit<IUser, 'password'> {
+    return { id: _id, email };
   }
 }

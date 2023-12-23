@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import { User, UserSchema } from '../src/schemas/user.schema';
-import { Product, ProductSchema } from '../src/schemas/product.schema';
+import { User, UserSchema } from '../src/database/schemas/user.schema';
+import { Product, ProductSchema } from '../src/database/schemas/product.schema';
 
 export async function db_connect() {
   await mongoose

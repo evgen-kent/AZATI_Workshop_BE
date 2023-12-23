@@ -1,31 +1,48 @@
-import { Injectable } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { lastValueFrom } from 'rxjs';
-import { IUser } from '../../schemas/user.schema';
+import { lastValueFrom, map, Observable } from 'rxjs';
+import { IUser, User, UserDocument } from '../../database/schemas/user.schema';
+import { AuthRequestDto, AuthResponseDto } from './auth.dto';
+import { JwtPayload } from './jwt.strategy';
+
+interface IAuthService {
+  loginAsync(dto: AuthRequestDto): Observable<AuthResponseDto>;
+
+  signUpAsync(dto: AuthRequestDto): Observable<AuthResponseDto>;
+}
 
 @Injectable()
-export class AuthService {
+export class AuthService implements IAuthService {
   constructor(
-    private usersService: UsersService,
+    private userService: UserService,
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, pass: string): Promise<IUser> {
-    const user = await lastValueFrom(
-      this.usersService.findOneWithPassword(username),
+  loginAsync(dto: AuthRequestDto): Observable<AuthResponseDto> {
+    return this.userService.findUserByEmail(dto.email).pipe(
+      map((user) => {
+        if (!user) {
+          throw new BadRequestException('Email not found');
+        }
+        return this.processResponse(user);
+      }),
     );
-    if (user && user.password === pass) {
-      const { password, ...result } = user;
-      return result;
-    }
-    return null;
   }
 
-  login(user: IUser): { access_token: string } {
-    const payload = { username: user.username, sub: user.userId };
+  signUpAsync(dto: AuthRequestDto): Observable<AuthResponseDto> {
+    return this.userService.createUser(dto).pipe(
+      map((user) => {
+        return this.processResponse(user);
+      }),
+    );
+  }
+
+  private processResponse(user: UserDocument) {
+    const payload: JwtPayload = { id: user._id, email: user.email };
     return {
-      access_token: this.jwtService.sign(payload),
+      user: this.userService.obfuscateUser(user),
+      token: { access_token: this.jwtService.sign(payload) },
     };
   }
 }

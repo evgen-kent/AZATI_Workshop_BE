@@ -10,14 +10,14 @@ import {
 } from '@nestjs/common';
 import { forkJoin, map, Observable } from 'rxjs';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { IUser, User } from '../../schemas/user.schema';
-import { UsersService } from './users.service';
+import { IUser, User } from '../../database/schemas/user.schema';
+import { UserService } from './user.service';
 import { Patch } from '@nestjs/common/decorators/http/request-mapping.decorator';
 import { IPaginatedResponse } from '../../interfaces/paginated-response.interface';
 
 @Controller('users')
-export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+export class UserController {
+  constructor(private readonly usersService: UserService) {}
 
   @Post()
   createUser(@Body() user: IUser): Observable<User> {
@@ -26,7 +26,7 @@ export class UsersController {
 
   @Get(':id')
   getUser(@Param('id') id: string): Observable<Omit<User, 'password'>> {
-    return this.usersService.findUser(id);
+    return this.usersService.findUserById(id);
   }
 
   @Get()
@@ -37,12 +37,9 @@ export class UsersController {
     const start = parseInt(start_query) || undefined;
     const limit = parseInt(limit_query) || undefined;
 
-    return forkJoin([
-      this.usersService.getUsers(start, limit),
-      this.usersService.count(),
-    ]).pipe(
-      map(([data, total]) => {
-        return { total, start, limit, data };
+    return forkJoin([this.usersService.getUsers(start, limit)]).pipe(
+      map(([data]) => {
+        return { total: data.length, start, limit, data };
       }),
     );
   }

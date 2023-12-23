@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { IProduct, Product, ProductDocument } from '../../schemas/product.schema';
+import { IProduct, Product, ProductDocument } from '../../database/schemas/product.schema';
 import { Model } from 'mongoose';
 import { from, map, Observable } from 'rxjs';
 
 type CreateProductDTO = Exclude<IProduct, 'productId'>;
 
 @Injectable()
-export class ProductsService {
+export class ProductService {
   constructor(
     @InjectModel(Product.name)
     private readonly productModel: Model<ProductDocument>,

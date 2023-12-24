@@ -1,7 +1,18 @@
 import { IUser } from '../../database/schemas/user.schema';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
-export interface AuthRequestDto {
+interface IAuthRequestDto {
   email: string;
+  password: string;
+}
+
+export class AuthRequestDto implements IAuthRequestDto {
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @IsNotEmpty()
+  @IsString()
   password: string;
 }
 

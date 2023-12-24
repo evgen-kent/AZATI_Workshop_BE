@@ -8,7 +8,6 @@ import { JwtPayload } from './jwt.strategy';
 
 interface IAuthService {
   loginAsync(dto: AuthRequestDto): Observable<AuthResponseDto>;
-
   signUpAsync(dto: AuthRequestDto): Observable<AuthResponseDto>;
 }
 

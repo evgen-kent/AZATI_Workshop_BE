@@ -21,9 +21,9 @@ export class UserService {
         if (
           error.code === 11000 &&
           error.keyPattern &&
-          error.keyPattern.username
+          error.keyPattern.email
         ) {
-          throw new BadRequestException('Username already exists.');
+          throw new BadRequestException('Email already exists.');
         }
         throw new BadRequestException('Could not create user.');
       }),

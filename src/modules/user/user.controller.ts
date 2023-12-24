@@ -21,12 +21,12 @@ export class UserController {
 
   @Post()
   createUser(@Body() user: IUser): Observable<User> {
-    return this.usersService.createUser(user);
+    return this.usersService.createUserAsync(user);
   }
 
   @Get(':id')
   getUser(@Param('id') id: string): Observable<Omit<User, 'password'>> {
-    return this.usersService.findUserById(id);
+    return this.usersService.findUserByIdAsync(id);
   }
 
   @Get()
@@ -37,9 +37,12 @@ export class UserController {
     const start = parseInt(start_query) || undefined;
     const limit = parseInt(limit_query) || undefined;
 
-    return forkJoin([this.usersService.getUsers(start, limit)]).pipe(
-      map(([data]) => {
-        return { total: data.length, start, limit, data };
+    return forkJoin([
+      this.usersService.getUsersAsync(start, limit),
+      this.usersService.countAsync(),
+    ]).pipe(
+      map(([data, total]) => {
+        return { total, start, limit, data };
       }),
     );
   }
@@ -47,7 +50,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   deleteUser(@Param('id') userId: string): Observable<{ result: string }> {
-    return this.usersService.deleteUser(userId);
+    return this.usersService.deleteUserByIdAsync(userId);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -56,6 +59,6 @@ export class UserController {
     @Param('id') userId: string,
     @Body() user: Partial<IUser>,
   ): Observable<Partial<User>> {
-    return this.usersService.updateUser(userId, user);
+    return this.usersService.updateUserAsync(userId, user);
   }
 }

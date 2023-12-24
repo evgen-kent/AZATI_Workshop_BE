@@ -19,7 +19,7 @@ export class AuthService implements IAuthService {
   ) {}
 
   loginAsync(dto: AuthRequestDto): Observable<AuthResponseDto> {
-    return this.userService.findUserByEmail(dto.email).pipe(
+    return this.userService.findUserByEmailAsync(dto.email).pipe(
       map((user) => {
         if (!user) {
           throw new BadRequestException('Email not found');
@@ -30,7 +30,7 @@ export class AuthService implements IAuthService {
   }
 
   signUpAsync(dto: AuthRequestDto): Observable<AuthResponseDto> {
-    return this.userService.createUser(dto).pipe(
+    return this.userService.createUserAsync(dto).pipe(
       map((user) => {
         return this.processResponse(user);
       }),
@@ -40,7 +40,7 @@ export class AuthService implements IAuthService {
   private processResponse(user: UserDocument) {
     const payload: JwtPayload = { id: user._id, email: user.email };
     return {
-      user: this.userService.obfuscateUser(user),
+      user: this.userService.excludeSensitiveFields(user),
       token: { access_token: this.jwtService.sign(payload) },
     };
   }

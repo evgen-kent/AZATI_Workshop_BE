@@ -1,11 +1,7 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { catchError, from, map, Observable, of, switchMap } from 'rxjs';
+import { catchError, from, map, Observable } from 'rxjs';
 import { IUser, User, UserDocument } from '../../database/schemas/user.schema';
 
 type CreateUserDto = Omit<IUser, 'id'>;
@@ -14,7 +10,12 @@ type CreateUserDto = Omit<IUser, 'id'>;
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  createUser(createUserDto: CreateUserDto): Observable<UserDocument> {
+
+  countAsync(): Observable<number> {
+    return <Observable<number>>from(this.userModel.count());
+  }
+
+  createUserAsync(createUserDto: CreateUserDto): Observable<UserDocument> {
     const createdUser = new this.userModel(createUserDto);
     return from(createdUser.save()).pipe(
       catchError((error) => {
@@ -30,36 +31,41 @@ export class UserService {
     );
   }
 
-  getUsers(start: number, limit: number): Observable<Omit<User, 'password'>[]> {
+  getUsersAsync(
+    start: number,
+    limit: number,
+  ): Observable<Omit<User, 'password'>[]> {
     return from(this.userModel.find().skip(start).limit(limit).exec()).pipe(
-      map((users) => users.map(this.obfuscateUser)),
+      map((users) => users.map(this.excludeSensitiveFields)),
     );
   }
 
-  findUserById(_id: string): Observable<Omit<User, 'password'>> {
-    return from(this.userModel.findOne({ _id })).pipe(map(this.obfuscateUser));
+  findUserByIdAsync(id: string): Observable<Omit<User, 'password'>> {
+    return from(this.userModel.findOne({ _id: id })).pipe(
+      map(this.excludeSensitiveFields),
+    );
   }
 
-  findUserByEmail(email: string): Observable<UserDocument> {
+  findUserByEmailAsync(email: string): Observable<UserDocument> {
     return from(this.userModel.findOne({ email }));
   }
 
-  deleteUser(userId: string): Observable<{ result: string }> {
-    return from(this.userModel.deleteOne({ _id: userId })).pipe(
+  deleteUserByIdAsync(id: string): Observable<{ result: string }> {
+    return from(this.userModel.deleteOne({ _id: id })).pipe(
       map(() => ({ result: 'ok' })),
     );
   }
 
-  updateUser(
-    userId: string,
+  updateUserAsync(
+    id: string,
     user: Partial<IUser>,
   ): Observable<Partial<UserDocument>> {
     return from(
-      this.userModel.findOneAndUpdate({ _id: userId }, user, { new: true }),
-    ).pipe(map(this.obfuscateUser));
+      this.userModel.findOneAndUpdate({ _id: id }, user, { new: true }),
+    ).pipe(map(this.excludeSensitiveFields));
   }
 
-  obfuscateUser({ _id, email }: UserDocument): Omit<IUser, 'password'> {
+  excludeSensitiveFields({ _id, email }: UserDocument): Omit<IUser, 'password'> {
     return { id: _id, email };
   }
 }

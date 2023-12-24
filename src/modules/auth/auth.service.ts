@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { lastValueFrom, map, Observable } from 'rxjs';
 import { IUser, User, UserDocument } from '../../database/schemas/user.schema';
 import { AuthRequestDto, AuthResponseDto } from './auth.dto';
-import { JwtPayload } from './jwt.strategy';
+import { JwtPayload } from './jwt/jwt.strategy';
 
 interface IAuthService {
   loginAsync(dto: AuthRequestDto): Observable<AuthResponseDto>;

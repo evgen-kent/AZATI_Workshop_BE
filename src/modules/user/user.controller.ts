@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { forkJoin, map, Observable } from 'rxjs';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { IUser, User } from '../../database/schemas/user.schema';
 import { UserService } from './user.service';
 import { Patch } from '@nestjs/common/decorators/http/request-mapping.decorator';

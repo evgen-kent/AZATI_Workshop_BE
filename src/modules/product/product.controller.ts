@@ -12,7 +12,7 @@ import { forkJoin, map, Observable } from 'rxjs';
 import { IProduct, ProductDocument } from '../../database/schemas/product.schema';
 import { ProductService } from './product.service';
 import { Patch } from '@nestjs/common/decorators/http/request-mapping.decorator';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { IPaginatedResponse } from '../../interfaces/paginated-response.interface';
 
 @Controller('product')

@@ -6,10 +6,11 @@ import { AuthService } from './auth.service';
 import { jwtConstants } from './jwt/constants';
 import { JwtStrategy } from './jwt/jwt.strategy';
 import { AuthController } from './auth.controller';
+import { PasswordService } from './password.service';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, PasswordService, JwtStrategy],
   imports: [
     UserModule,
     PassportModule,

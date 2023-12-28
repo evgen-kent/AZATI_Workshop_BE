@@ -49,24 +49,15 @@ export const testProducts = [
 
 export const testUsers = [
   new userModel({
-    username: 'scriptSQD',
     password: '123456',
     email: 'scriipt.fun@gmail.com',
-    phone: '+1(23)456-78-90',
-    site: 'scriptsqd.dev',
   }),
   new userModel({
-    username: 'FryNn',
     password: '123456',
     email: 'sergey.matus.off@mail.ru',
-    phone: '+1(23)456-78-90',
-    site: 'github.com/frynn',
   }),
   new userModel({
-    username: 'Andy Chevich',
     password: '123456',
     email: 'andrey.rogachevich@azati.com',
-    phone: '+1(23)456-78-90',
-    site: 'github.com/chevich123',
   }),
 ];

@@ -1,29 +1,22 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './modules/auth/auth.module';
-import { UsersModule } from './modules/users/users.module';
+import { UserModule } from './modules/user/user.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { ImagesController } from './modules/images/images.controller';
-import { ProductsModule } from './modules/products/products.module';
-import { ENV } from '../config/env.interface';
+import { ProductModule } from './modules/product/product.module';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
-    MongooseModule.forRootAsync({
-      useFactory: () => ({
-        uri: ENV.MONGODB_CLOUD_URI,
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      }),
-    }),
     AuthModule,
-    UsersModule,
+    UserModule,
     MulterModule.register({ dest: './files' }),
-    ProductsModule,
+    ProductModule,
   ],
   controllers: [AppController, ImagesController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+}

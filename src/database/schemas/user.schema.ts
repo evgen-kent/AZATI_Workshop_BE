@@ -3,40 +3,20 @@ import { Document } from 'mongoose';
 import { Optional } from '@nestjs/common';
 
 export type IUser = {
-  userId: string;
-  username: string;
+  id: string;
+  email: string;
   password?: string;
-  email?: string;
-  phone?: string;
-  site?: string;
-  avatar?: string;
 };
 
 export type UserDocument = User & Document;
 
 @Schema()
 export class User {
-  @Prop()
-  username: string;
+  @Prop({ unique: true, required: true })
+  email: string;
 
-  @Prop()
+  @Prop({ required: true })
   password: string;
-
-  @Prop()
-  @Optional()
-  email?: string;
-
-  @Prop()
-  @Optional()
-  phone?: string;
-
-  @Prop()
-  @Optional()
-  site?: string;
-
-  @Prop()
-  @Optional()
-  avatar?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import { User, UserSchema } from '../src/schemas/user.schema';
-import { Product, ProductSchema } from '../src/schemas/product.schema';
+import { User, UserSchema } from '../src/database/schemas/user.schema';
+import { Product, ProductSchema } from '../src/database/schemas/product.schema';
 
 export async function db_connect() {
   await mongoose
@@ -49,24 +49,15 @@ export const testProducts = [
 
 export const testUsers = [
   new userModel({
-    username: 'scriptSQD',
     password: '123456',
     email: 'scriipt.fun@gmail.com',
-    phone: '+1(23)456-78-90',
-    site: 'scriptsqd.dev',
   }),
   new userModel({
-    username: 'FryNn',
     password: '123456',
     email: 'sergey.matus.off@mail.ru',
-    phone: '+1(23)456-78-90',
-    site: 'github.com/frynn',
   }),
   new userModel({
-    username: 'Andy Chevich',
     password: '123456',
     email: 'andrey.rogachevich@azati.com',
-    phone: '+1(23)456-78-90',
-    site: 'github.com/chevich123',
   }),
 ];

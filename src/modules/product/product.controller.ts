@@ -9,16 +9,16 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { forkJoin, map, Observable } from 'rxjs';
-import { IProduct, ProductDocument } from '../../schemas/product.schema';
-import { ProductsService } from './products.service';
+import { IProduct, ProductDocument } from '../../database/schemas/product.schema';
+import { ProductService } from './product.service';
 import { Patch } from '@nestjs/common/decorators/http/request-mapping.decorator';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { IPaginatedResponse } from '../../interfaces/paginated-response.interface';
 
-@Controller('products')
+@Controller('product')
 @UseGuards(JwtAuthGuard)
-export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+export class ProductController {
+  constructor(private readonly productsService: ProductService) {}
 
   @Get()
   getAll(

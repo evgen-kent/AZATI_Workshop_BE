@@ -3,7 +3,7 @@ import * as process from 'process';
 
 dotenv.config();
 
-interface ProcessEnv {
+export interface ProcessEnv {
   PROTOCOL: string;
   HOST: string;
   PORT: number;
@@ -16,7 +16,7 @@ export const ENV: ProcessEnv = {
   PROTOCOL: process.env.PROTOCOL,
   HOST: process.env.HOST,
   PORT: +process.env.PORT,
-  CLIENT_URI: process.env.CLIENT_URL,
+  CLIENT_URI: process.env.CLIENT_URI,
   MONGODB_URI: process.env.MONGODB_URI,
   MONGODB_CLOUD_URI: process.env.MONGODB_CLOUD_URI,
 };

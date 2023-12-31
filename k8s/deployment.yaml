@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: azati-workshop-be
+spec:
+  selector:
+    matchLabels:
+      app: azati-workshop-be
+  replicas: 2
+  template:
+      metadata:
+        labels:
+          app: azati-workshop-be
+      spec:
+        containers:
+          - name: azati-workshop-be
+            image: sergeymurin/azati-workshop-be
+            ports:
+              - containerPort: 5000

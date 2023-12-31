@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { from, map, Observable } from 'rxjs';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 interface IPasswordService {
   hashPasswordAsync(password: string): Observable<string>;

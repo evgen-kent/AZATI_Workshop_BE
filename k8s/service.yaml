@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: azati-workshop-be
+spec:
+  selector:
+    app: azati-workshop-be
+  ports:
+    - protocol: TCP
+      port: 5000
+  type: NodePort

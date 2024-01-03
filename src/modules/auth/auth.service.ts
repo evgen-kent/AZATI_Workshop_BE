@@ -1,24 +1,16 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import {
-  catchError,
-  lastValueFrom,
-  map,
-  Observable,
-  of,
-  switchMap,
-  throwError,
-} from 'rxjs';
-import { IUser, User, UserDocument } from '../../database/schemas/user.schema';
-import { AuthRequestDto, AuthResponseDto } from './auth.dto';
+import { map, Observable, of, switchMap } from 'rxjs';
+import { UserDocument } from '../../database/schemas/user.schema';
+import { AuthRequestDto, IAuthResponseDto } from './auth.dto';
 import { JwtPayload } from './jwt/jwt.strategy';
 import { PasswordService } from './password.service';
 
 interface IAuthService {
-  loginAsync(dto: AuthRequestDto): Observable<AuthResponseDto>;
+  loginAsync(dto: AuthRequestDto): Observable<IAuthResponseDto>;
 
-  signUpAsync(dto: AuthRequestDto): Observable<AuthResponseDto>;
+  signUpAsync(dto: AuthRequestDto): Observable<IAuthResponseDto>;
 }
 
 @Injectable()
@@ -29,7 +21,7 @@ export class AuthService implements IAuthService {
     private jwtService: JwtService,
   ) {}
 
-  loginAsync(dto: AuthRequestDto): Observable<AuthResponseDto> {
+  loginAsync(dto: AuthRequestDto): Observable<IAuthResponseDto> {
     return this.userService.findUserByEmailAsync(dto.email).pipe(
       switchMap((user) => {
         if (!user) {
@@ -49,7 +41,7 @@ export class AuthService implements IAuthService {
     );
   }
 
-  signUpAsync(dto: AuthRequestDto): Observable<AuthResponseDto> {
+  signUpAsync(dto: AuthRequestDto): Observable<IAuthResponseDto> {
     return this.passwordService.hashPasswordAsync(dto.password).pipe(
       switchMap((hashedPassword) =>
         this.userService

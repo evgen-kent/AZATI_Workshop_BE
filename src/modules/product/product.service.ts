@@ -9,8 +9,22 @@ import { Model } from 'mongoose';
 
 type CreateProductDTO = Exclude<IProduct, 'productId'>;
 
+interface IProductService {
+  countAsync(): Promise<number>;
+
+  createOneAsync(product: CreateProductDTO): Promise<ProductDocument>;
+
+  getAllAsync(start: number, limit: number): Promise<ProductDocument[]>;
+
+  getByIdAsync(_id: string): Promise<ProductDocument>;
+
+  deleteOneAsync(_id: string): Promise<{ result: string }>;
+
+  updateById(_id: string, payload: Partial<IProduct>): Promise<ProductDocument>;
+}
+
 @Injectable()
-export class ProductService {
+export class ProductService implements IProductService {
   constructor(
     @InjectModel(Product.name)
     private readonly productModel: Model<ProductDocument>,

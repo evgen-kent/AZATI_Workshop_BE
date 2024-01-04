@@ -5,8 +5,32 @@ import { IUser, User, UserDocument } from '../../database/schemas/user.schema';
 
 type CreateUserDto = Omit<IUser, 'id'>;
 
+interface IUserService {
+  countAsync(): Promise<number>;
+
+  createUserAsync(createUserDto: CreateUserDto): Promise<UserDocument>;
+
+  getUsersAsync(
+    start: number,
+    limit: number,
+  ): Promise<Omit<User, 'password'>[]>;
+
+  findUserByIdAsync(id: string): Promise<Omit<User, 'password'>>;
+
+  findUserByEmailAsync(email: string): Promise<UserDocument>;
+
+  deleteUserByIdAsync(id: string): Promise<{ result: string }>;
+
+  updateUserAsync(
+    id: string,
+    user: Partial<IUser>,
+  ): Promise<Partial<UserDocument>>;
+
+  excludeSensitiveFields({ _id, email }: UserDocument): Omit<IUser, 'password'>;
+}
+
 @Injectable()
-export class UserService {
+export class UserService implements IUserService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   async countAsync(): Promise<number> {

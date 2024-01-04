@@ -9,8 +9,6 @@ import { Product, ProductSchema } from './schemas/product.schema';
     MongooseModule.forRootAsync({
       useFactory: () => ({
         uri: ENV.MONGODB_CLOUD_URI,
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
       }),
     }),
     MongooseModule.forFeature([

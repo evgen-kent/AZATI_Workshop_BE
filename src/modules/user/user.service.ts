@@ -12,7 +12,7 @@ export class UserService {
 
 
   countAsync(): Observable<number> {
-    return <Observable<number>>from(this.userModel.count());
+    return <Observable<number>>from(this.userModel.countDocuments());
   }
 
   createUserAsync(createUserDto: CreateUserDto): Observable<UserDocument> {

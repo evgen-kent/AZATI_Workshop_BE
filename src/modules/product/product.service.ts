@@ -14,7 +14,7 @@ export class ProductService {
   ) {}
 
   count(): Observable<number> {
-    return <Observable<number>>from(this.productModel.count());
+    return <Observable<number>>from(this.productModel.countDocuments());
   }
 
   createOne(product: CreateProductDTO): Observable<ProductDocument> {

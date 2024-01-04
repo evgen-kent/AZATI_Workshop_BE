@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { IProduct, Product, ProductDocument } from '../../database/schemas/product.schema';
+import {
+  IProduct,
+  Product,
+  ProductDocument,
+} from '../../database/schemas/product.schema';
 import { Model } from 'mongoose';
-import { from, map, Observable } from 'rxjs';
 
 type CreateProductDTO = Exclude<IProduct, 'productId'>;
 
@@ -13,37 +16,32 @@ export class ProductService {
     private readonly productModel: Model<ProductDocument>,
   ) {}
 
-  count(): Observable<number> {
-    return <Observable<number>>from(this.productModel.countDocuments());
+  async countAsync(): Promise<number> {
+    return this.productModel.countDocuments();
   }
 
-  createOne(product: CreateProductDTO): Observable<ProductDocument> {
+  async createOneAsync(product: CreateProductDTO): Promise<ProductDocument> {
     const newProduct = new this.productModel(product);
-    return from(newProduct.save());
+    return newProduct.save();
   }
 
-  getAll(start = 0, limit = 50): Observable<ProductDocument[]> {
-    return from(this.productModel.find().skip(start).limit(limit).exec());
+  async getAllAsync(start = 0, limit = 50): Promise<ProductDocument[]> {
+    return await this.productModel.find().skip(start).limit(limit).exec();
   }
 
-  getById(_id: string): Observable<ProductDocument> {
-    return from(this.productModel.findOne({ _id }));
+  async getByIdAsync(_id: string): Promise<ProductDocument> {
+    return this.productModel.findOne({ _id });
   }
 
-  deleteOne(_id: string): Observable<{ result: string }> {
-    return from(this.productModel.deleteOne({ _id })).pipe(
-      map(() => {
-        return { result: 'ok' };
-      }),
-    );
+  async deleteOneAsync(_id: string): Promise<{ result: string }> {
+    await this.productModel.deleteOne({ _id });
+    return { result: 'ok' };
   }
 
-  updateById(
+  async updateById(
     _id: string,
     payload: Partial<IProduct>,
-  ): Observable<ProductDocument> {
-    return from(
-      this.productModel.findOneAndUpdate({ _id }, payload, { new: true }),
-    );
+  ): Promise<ProductDocument> {
+    return this.productModel.findOneAndUpdate({ _id }, payload, { new: true });
   }
 }

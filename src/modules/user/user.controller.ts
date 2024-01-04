@@ -8,7 +8,6 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { forkJoin, map, Observable } from 'rxjs';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { IUser, User } from '../../database/schemas/user.schema';
 import { UserService } from './user.service';
@@ -20,36 +19,31 @@ export class UserController {
   constructor(private readonly usersService: UserService) {}
 
   @Post()
-  createUser(@Body() user: IUser): Observable<User> {
+  createUser(@Body() user: IUser): Promise<User> {
     return this.usersService.createUserAsync(user);
   }
 
   @Get(':id')
-  getUser(@Param('id') id: string): Observable<Omit<User, 'password'>> {
+  getUser(@Param('id') id: string): Promise<Omit<User, 'password'>> {
     return this.usersService.findUserByIdAsync(id);
   }
 
   @Get()
-  getUsers(
+  async getUsers(
     @Query('start') start_query?: string,
     @Query('limit') limit_query?: string,
-  ): Observable<IPaginatedResponse<Omit<User, 'password'>[]>> {
+  ): Promise<IPaginatedResponse<Omit<User, 'password'>[]>> {
     const start = parseInt(start_query) || undefined;
     const limit = parseInt(limit_query) || undefined;
+    const data = await this.usersService.getUsersAsync(start, limit);
+    const total = await this.usersService.countAsync();
 
-    return forkJoin([
-      this.usersService.getUsersAsync(start, limit),
-      this.usersService.countAsync(),
-    ]).pipe(
-      map(([data, total]) => {
-        return { total, start, limit, data };
-      }),
-    );
+    return { total, start, limit, data };
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  deleteUser(@Param('id') userId: string): Observable<{ result: string }> {
+  deleteUser(@Param('id') userId: string): Promise<{ result: string }> {
     return this.usersService.deleteUserByIdAsync(userId);
   }
 
@@ -58,7 +52,7 @@ export class UserController {
   updateUser(
     @Param('id') userId: string,
     @Body() user: Partial<IUser>,
-  ): Observable<Partial<User>> {
+  ): Promise<Partial<User>> {
     return this.usersService.updateUserAsync(userId, user);
   }
 }

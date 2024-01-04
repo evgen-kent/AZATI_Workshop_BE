@@ -1,14 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { from, map, Observable } from 'rxjs';
 import * as bcrypt from 'bcryptjs';
 
 interface IPasswordService {
-  hashPasswordAsync(password: string): Observable<string>;
+  hashPasswordAsync(password: string): Promise<string>;
 
   comparePasswordWithHashAsync(
     password: string,
     hash: string,
-  ): Observable<boolean>;
+  ): Promise<boolean>;
 }
 
 @Injectable()
@@ -17,16 +16,14 @@ export class PasswordService implements IPasswordService {
 
   constructor() {}
 
-  hashPasswordAsync(password: string): Observable<string> {
-    return from(bcrypt.hash(password, this.saltRounds));
+  async hashPasswordAsync(password: string): Promise<string> {
+    return bcrypt.hash(password, this.saltRounds);
   }
 
-  comparePasswordWithHashAsync(
+  async comparePasswordWithHashAsync(
     password: string,
     hash: string,
-  ): Observable<boolean> {
-    return from(bcrypt.compare(password, hash)).pipe(
-      map((isValid: boolean) => isValid),
-    );
+  ): Promise<boolean> {
+    return bcrypt.compare(password, hash);
   }
 }

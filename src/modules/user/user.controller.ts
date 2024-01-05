@@ -26,6 +26,7 @@ import { matchAuthorizationWithId } from '../../utils/match.authorization.with.i
 export class UserController {
   constructor(private readonly usersService: UserService) {}
 
+
   @Get(':id')
   getUser(@Param('id') id: string): Promise<IUserResponseDto> {
     return this.usersService.findUserByIdAsync(id);

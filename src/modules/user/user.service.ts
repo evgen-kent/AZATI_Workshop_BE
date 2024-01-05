@@ -75,6 +75,9 @@ export class UserService implements IUserService {
 
   async findUserByIdAsync(id: string): Promise<IUserResponseDto> {
     const user = await this.userModel.findOne({ _id: id });
+    if (!user) {
+      throw new BadRequestException(`Cannot find user with id ${id}`);
+    }
     return this.excludeSensitiveFields(user);
   }
 
@@ -94,6 +97,9 @@ export class UserService implements IUserService {
     const newUser = await this.userModel.findOneAndUpdate({ _id: id }, user, {
       new: true,
     });
+    if (!newUser) {
+      throw new BadRequestException(`Cannot find user with id ${id}`);
+    }
     return this.excludeSensitiveFields(newUser);
   }
 

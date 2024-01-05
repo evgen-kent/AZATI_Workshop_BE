@@ -38,8 +38,11 @@ export class UserService implements IUserService {
   }
 
   async createUserAsync(createUserDto: CreateUserDto): Promise<UserDocument> {
-    const createdUser = new this.userModel(createUserDto);
+    if (!createUserDto.username) {
+      createUserDto.username = createUserDto.email.split('@')[0];
+    }
     try {
+      const createdUser = new this.userModel(createUserDto);
       return createdUser.save();
     } catch (error) {
       if (error.code === 11000 && error.keyPattern && error.keyPattern.email) {
@@ -84,7 +87,8 @@ export class UserService implements IUserService {
   excludeSensitiveFields({
     _id,
     email,
+    username,
   }: UserDocument): Omit<IUser, 'password'> {
-    return { id: _id, email };
+    return { id: _id, email, username };
   }
 }

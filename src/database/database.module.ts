@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ENV } from '../../config/env.interface';
 import { User, UserSchema } from './schemas/user.schema';
 import { Product, ProductSchema } from './schemas/product.schema';
+import { DatabaseService } from './database.service';
 
 @Module({
   imports: [
@@ -17,6 +18,13 @@ import { Product, ProductSchema } from './schemas/product.schema';
       // ...
     ]),
   ],
+  providers: [DatabaseService],
   exports: [MongooseModule],
 })
-export class DatabaseModule {}
+export class DatabaseModule implements OnModuleInit {
+  constructor(private readonly databaseService: DatabaseService) {}
+
+  async onModuleInit() {
+    await this.databaseService.initializeAll();
+  }
+}

@@ -4,55 +4,52 @@ import {
   Delete,
   Get,
   Param,
-  Post,
   Query,
   UseGuards,
+  UsePipes,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
-import { IUser, User } from '../../database/schemas/user.schema';
 import { UserService } from './user.service';
 import { Patch } from '@nestjs/common/decorators/http/request-mapping.decorator';
 import { IPaginatedResponse } from '../../interfaces/paginated-response.interface';
+import { ValidateDtoPipe } from '../../pipes/validate.dto.pipe';
+import {
+  GetUsersQueryDto,
+  IDeleteUserResponseDto,
+  IUserResponseDto,
+  UpdateUserRequestDto,
+} from './user.dto';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly usersService: UserService) {}
 
-  @Post()
-  createUser(@Body() user: IUser): Promise<User> {
-    return this.usersService.createUserAsync(user);
-  }
-
   @Get(':id')
-  getUser(@Param('id') id: string): Promise<Omit<User, 'password'>> {
+  getUser(@Param('id') id: string): Promise<IUserResponseDto> {
     return this.usersService.findUserByIdAsync(id);
   }
 
   @Get()
+  @UsePipes(new ValidateDtoPipe())
   async getUsers(
-    @Query('start') start_query?: string,
-    @Query('limit') limit_query?: string,
-  ): Promise<IPaginatedResponse<Omit<User, 'password'>[]>> {
-    const start = parseInt(start_query) || undefined;
-    const limit = parseInt(limit_query) || undefined;
-    const data = await this.usersService.getUsersAsync(start, limit);
-    const total = await this.usersService.countAsync();
-
-    return { total, start, limit, data };
+    @Query() queryDto: GetUsersQueryDto,
+  ): Promise<IPaginatedResponse<IUserResponseDto[]>> {
+    return await this.usersService.getUsersPaginateAsync(queryDto.start, queryDto.limit);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  deleteUser(@Param('id') userId: string): Promise<{ result: string }> {
-    return this.usersService.deleteUserByIdAsync(userId);
+  deleteUser(@Param('id') id: string): Promise<IDeleteUserResponseDto> {
+    return this.usersService.deleteUserByIdAsync(id);
   }
 
   @UseGuards(JwtAuthGuard)
+  @UsePipes(new ValidateDtoPipe())
   @Patch(':id')
   updateUser(
-    @Param('id') userId: string,
-    @Body() user: Partial<IUser>,
-  ): Promise<Partial<User>> {
-    return this.usersService.updateUserAsync(userId, user);
+    @Param('id') id: string,
+    @Body() user: UpdateUserRequestDto,
+  ): Promise<IUserResponseDto> {
+    return this.usersService.updateUserAsync(id, user);
   }
 }

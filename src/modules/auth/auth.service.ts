@@ -1,16 +1,15 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { map, Observable, of, switchMap } from 'rxjs';
 import { UserDocument } from '../../database/schemas/user.schema';
 import { AuthRequestDto, IAuthResponseDto } from './auth.dto';
 import { JwtPayload } from './jwt/jwt.strategy';
 import { PasswordService } from './password.service';
 
 interface IAuthService {
-  loginAsync(dto: AuthRequestDto): Observable<IAuthResponseDto>;
+  loginAsync(dto: AuthRequestDto): Promise<IAuthResponseDto>;
 
-  signUpAsync(dto: AuthRequestDto): Observable<IAuthResponseDto>;
+  signUpAsync(dto: AuthRequestDto): Promise<IAuthResponseDto>;
 }
 
 @Injectable()
@@ -21,38 +20,32 @@ export class AuthService implements IAuthService {
     private jwtService: JwtService,
   ) {}
 
-  loginAsync(dto: AuthRequestDto): Observable<IAuthResponseDto> {
-    return this.userService.findUserByEmailAsync(dto.email).pipe(
-      switchMap((user) => {
-        if (!user) {
-          throw new BadRequestException('Email not found');
-        }
-        return this.passwordService
-          .comparePasswordWithHashAsync(dto.password, user.password)
-          .pipe(
-            map((isValid) => {
-              if (!isValid) {
-                throw new BadRequestException('Invalid password');
-              }
-              return this.processResponse(user);
-            }),
-          );
-      }),
-    );
+  async loginAsync(dto: AuthRequestDto): Promise<IAuthResponseDto> {
+    const user = await this.userService.findUserByEmailAsync(dto.email);
+    if (!user) {
+      throw new BadRequestException('Email not found');
+    }
+
+    const passwordIsValid =
+      await this.passwordService.comparePasswordWithHashAsync(
+        dto.password,
+        user.password,
+      );
+    if (!passwordIsValid) {
+      throw new BadRequestException('Invalid password');
+    }
+    return this.processResponse(user);
   }
 
-  signUpAsync(dto: AuthRequestDto): Observable<IAuthResponseDto> {
-    return this.passwordService.hashPasswordAsync(dto.password).pipe(
-      switchMap((hashedPassword) =>
-        this.userService
-          .createUserAsync({ ...dto, password: hashedPassword })
-          .pipe(
-            switchMap((user) => {
-              return of(this.processResponse(user));
-            }),
-          ),
-      ),
+  async signUpAsync(dto: AuthRequestDto): Promise<IAuthResponseDto> {
+    const hashedPassword = await this.passwordService.hashPasswordAsync(
+      dto.password,
     );
+    const createdUser = await this.userService.createUserAsync({
+      ...dto,
+      password: hashedPassword,
+    });
+    return this.processResponse(createdUser);
   }
 
   private processResponse(user: UserDocument) {

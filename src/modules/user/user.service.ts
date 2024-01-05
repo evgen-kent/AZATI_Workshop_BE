@@ -1,71 +1,90 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { catchError, from, map, Observable } from 'rxjs';
 import { IUser, User, UserDocument } from '../../database/schemas/user.schema';
 
 type CreateUserDto = Omit<IUser, 'id'>;
 
-@Injectable()
-export class UserService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+interface IUserService {
+  countAsync(): Promise<number>;
 
-
-  countAsync(): Observable<number> {
-    return <Observable<number>>from(this.userModel.countDocuments());
-  }
-
-  createUserAsync(createUserDto: CreateUserDto): Observable<UserDocument> {
-    const createdUser = new this.userModel(createUserDto);
-    return from(createdUser.save()).pipe(
-      catchError((error) => {
-        if (
-          error.code === 11000 &&
-          error.keyPattern &&
-          error.keyPattern.email
-        ) {
-          throw new BadRequestException('Email already exists.');
-        }
-        throw new BadRequestException('Could not create user.');
-      }),
-    );
-  }
+  createUserAsync(createUserDto: CreateUserDto): Promise<UserDocument>;
 
   getUsersAsync(
     start: number,
     limit: number,
-  ): Observable<Omit<User, 'password'>[]> {
-    return from(this.userModel.find().skip(start).limit(limit).exec()).pipe(
-      map((users) => users.map(this.excludeSensitiveFields)),
-    );
-  }
+  ): Promise<Omit<User, 'password'>[]>;
 
-  findUserByIdAsync(id: string): Observable<Omit<User, 'password'>> {
-    return from(this.userModel.findOne({ _id: id })).pipe(
-      map(this.excludeSensitiveFields),
-    );
-  }
+  findUserByIdAsync(id: string): Promise<Omit<User, 'password'>>;
 
-  findUserByEmailAsync(email: string): Observable<UserDocument> {
-    return from(this.userModel.findOne({ email }));
-  }
+  findUserByEmailAsync(email: string): Promise<UserDocument>;
 
-  deleteUserByIdAsync(id: string): Observable<{ result: string }> {
-    return from(this.userModel.deleteOne({ _id: id })).pipe(
-      map(() => ({ result: 'ok' })),
-    );
-  }
+  deleteUserByIdAsync(id: string): Promise<{ result: string }>;
 
   updateUserAsync(
     id: string,
     user: Partial<IUser>,
-  ): Observable<Partial<UserDocument>> {
-    return from(
-      this.userModel.findOneAndUpdate({ _id: id }, user, { new: true }),
-    ).pipe(map(this.excludeSensitiveFields));
+  ): Promise<Partial<UserDocument>>;
+
+  excludeSensitiveFields({ _id, email }: UserDocument): Omit<IUser, 'password'>;
+}
+
+@Injectable()
+export class UserService implements IUserService {
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+
+  async countAsync(): Promise<number> {
+    return this.userModel.countDocuments();
   }
 
-  excludeSensitiveFields({ _id, email }: UserDocument): Omit<IUser, 'password'> {
+  async createUserAsync(createUserDto: CreateUserDto): Promise<UserDocument> {
+    const createdUser = new this.userModel(createUserDto);
+    try {
+      return createdUser.save();
+    } catch (error) {
+      if (error.code === 11000 && error.keyPattern && error.keyPattern.email) {
+        throw new BadRequestException('Email already exists.');
+      }
+      throw new BadRequestException('Could not create user.');
+    }
+  }
+
+  async getUsersAsync(
+    start: number,
+    limit: number,
+  ): Promise<Omit<User, 'password'>[]> {
+    const users = await this.userModel.find().skip(start).limit(limit).exec();
+    return users.map(this.excludeSensitiveFields);
+  }
+
+  async findUserByIdAsync(id: string): Promise<Omit<User, 'password'>> {
+    const user = await this.userModel.findOne({ _id: id });
+    return this.excludeSensitiveFields(user);
+  }
+
+  async findUserByEmailAsync(email: string): Promise<UserDocument> {
+    return this.userModel.findOne({ email });
+  }
+
+  async deleteUserByIdAsync(id: string): Promise<{ result: string }> {
+    await this.userModel.deleteOne({ _id: id });
+    return { result: 'ok' };
+  }
+
+  async updateUserAsync(
+    id: string,
+    user: Partial<IUser>,
+  ): Promise<Partial<UserDocument>> {
+    const newUser = await this.userModel.findOneAndUpdate({ _id: id }, user, {
+      new: true,
+    });
+    return this.excludeSensitiveFields(newUser);
+  }
+
+  excludeSensitiveFields({
+    _id,
+    email,
+  }: UserDocument): Omit<IUser, 'password'> {
     return { id: _id, email };
   }
 }

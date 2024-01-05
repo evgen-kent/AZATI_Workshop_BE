@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Query,
+  Req,
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
@@ -19,6 +20,7 @@ import {
   IUserResponseDto,
   UpdateUserRequestDto,
 } from './user.dto';
+import { matchAuthorizationWithId } from '../../utils/match.authorization.with.id';
 
 @Controller('users')
 export class UserController {
@@ -34,12 +36,19 @@ export class UserController {
   async getUsers(
     @Query() queryDto: GetUsersQueryDto,
   ): Promise<IPaginatedResponse<IUserResponseDto[]>> {
-    return await this.usersService.getUsersPaginateAsync(queryDto.start, queryDto.limit);
+    return await this.usersService.getUsersPaginateAsync(
+      queryDto.start,
+      queryDto.limit,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  deleteUser(@Param('id') id: string): Promise<IDeleteUserResponseDto> {
+  deleteUser(
+    @Param('id') id: string,
+    @Req() request: Request,
+  ): Promise<IDeleteUserResponseDto> {
+    matchAuthorizationWithId(request, id);
     return this.usersService.deleteUserByIdAsync(id);
   }
 
@@ -49,7 +58,9 @@ export class UserController {
   updateUser(
     @Param('id') id: string,
     @Body() user: UpdateUserRequestDto,
+    @Req() request: Request,
   ): Promise<IUserResponseDto> {
+    matchAuthorizationWithId(request, id);
     return this.usersService.updateUserAsync(id, user);
   }
 }

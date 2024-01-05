@@ -33,10 +33,10 @@ export class UserController {
 
   @Get()
   @UsePipes(new ValidateDtoPipe())
-  async getUsers(
+  getUsers(
     @Query() queryDto: GetUsersQueryDto,
   ): Promise<IPaginatedResponse<IUserResponseDto[]>> {
-    return await this.usersService.getUsersPaginateAsync(
+    return this.usersService.getUsersPaginateAsync(
       queryDto.start,
       queryDto.limit,
     );
@@ -57,10 +57,10 @@ export class UserController {
   @Patch(':id')
   updateUser(
     @Param('id') id: string,
-    @Body() user: UpdateUserRequestDto,
+    @Body() dto: UpdateUserRequestDto,
     @Req() request: Request,
   ): Promise<IUserResponseDto> {
     matchAuthorizationWithId(request, id);
-    return this.usersService.updateUserAsync(id, user);
+    return this.usersService.updateUserAsync(id, dto);
   }
 }

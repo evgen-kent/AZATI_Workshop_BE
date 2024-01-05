@@ -1,5 +1,5 @@
 import { Optional } from '@nestjs/common';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsNumberString, IsString } from 'class-validator';
 
 interface IUpdateUserRequestDto {
   username: string;
@@ -18,10 +18,11 @@ interface IGetUsersQueryDto {
 
 export class GetUsersQueryDto implements IGetUsersQueryDto {
   @Optional()
-  @IsNotEmpty()
+  @IsNumberString()
   start: string;
+
   @Optional()
-  @IsNotEmpty()
+  @IsNumberString()
   limit: string;
 }
 

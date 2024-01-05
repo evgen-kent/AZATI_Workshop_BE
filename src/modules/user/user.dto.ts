@@ -18,11 +18,9 @@ interface IGetUsersQueryDto {
 
 export class GetUsersQueryDto implements IGetUsersQueryDto {
   @Optional()
-  @IsNumberString()
   start: string;
 
   @Optional()
-  @IsNumberString()
   limit: string;
 }
 

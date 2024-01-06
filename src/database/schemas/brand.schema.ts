@@ -7,7 +7,7 @@ export interface IBrand {
 export type BrandDocument = Brand & Document;
 
 @Schema()
-export class Brand {
+export class Brand implements IBrand {
   @Prop()
   title: string;
 }

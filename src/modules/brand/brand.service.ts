@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Brand, BrandDocument } from '../../database/schemas/brands.schema';
-import { Model, Promise } from 'mongoose';
+import { Model } from 'mongoose';
 import { IBrandDto, IGetBrandsDto } from './brand.dto';
 
 interface IBrandService {
-  getBrandsAsync(): Promise<IGetBrandsDto>;
+  getBrandsAsync(sort: string): Promise<IGetBrandsDto>;
 }
 
 @Injectable()
@@ -14,8 +14,9 @@ export class BrandService implements IBrandService {
     @InjectModel(Brand.name) private brandModel: Model<BrandDocument>,
   ) {}
 
-  async getBrandsAsync(): Promise<IGetBrandsDto> {
-    const brands = await this.brandModel.find();
+  async getBrandsAsync(sort: string): Promise<IGetBrandsDto> {
+    const sortOptions = sort === 'desc' ? -1 : 1;
+    const brands = await this.brandModel.find().sort({ title: sortOptions });
     return { data: brands.map(this.processResponse) };
   }
 

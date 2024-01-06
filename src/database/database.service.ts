@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { InjectModel } from '@nestjs/mongoose';
 import { Brand, BrandDocument } from './schemas/brands.schema';
-import { Model, Promise } from 'mongoose';
+import { Model} from 'mongoose';
 
 type InitDocumentsType = BrandDocument;
 

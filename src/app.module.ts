@@ -6,7 +6,6 @@ import { UserModule } from './modules/user/user.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { ImagesController } from './modules/images/images.controller';
 import { ProductModule } from './modules/product/product.module';
-import { DatabaseModule } from './database/database.module';
 import { BrandModule } from './modules/brand/brand.module';
 
 @Module({

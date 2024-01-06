@@ -7,6 +7,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { ImagesController } from './modules/images/images.controller';
 import { ProductModule } from './modules/product/product.module';
 import { BrandModule } from './modules/brand/brand.module';
+import { CategoryModule } from './modules/category/category.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { BrandModule } from './modules/brand/brand.module';
     ProductModule,
 
     BrandModule,
+    CategoryModule,
   ],
   controllers: [AppController, ImagesController],
   providers: [AppService],

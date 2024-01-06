@@ -8,6 +8,7 @@ import { ImagesController } from './modules/images/images.controller';
 import { ProductModule } from './modules/product/product.module';
 import { BrandModule } from './modules/brand/brand.module';
 import { CategoryModule } from './modules/category/category.module';
+import { SizeModule } from './modules/size/size.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CategoryModule } from './modules/category/category.module';
 
     BrandModule,
     CategoryModule,
+    SizeModule,
   ],
   controllers: [AppController, ImagesController],
   providers: [AppService],

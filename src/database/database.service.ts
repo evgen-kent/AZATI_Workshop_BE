@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as path from 'path';
 import * as fs from 'fs';
 import { InjectModel } from '@nestjs/mongoose';
-import { Brand, BrandDocument } from './schemas/brands.schema';
+import { Brand, BrandDocument } from './schemas/brand.schema';
 import { Model} from 'mongoose';
 
 type InitDocumentsType = BrandDocument;

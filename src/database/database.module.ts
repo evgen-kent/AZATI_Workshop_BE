@@ -4,7 +4,7 @@ import { ENV } from '../../config/env.interface';
 import { User, UserSchema } from './schemas/user.schema';
 import { Product, ProductSchema } from './schemas/product.schema';
 import { DatabaseService } from './database.service';
-import { Brand, BrandSchema } from './schemas/brands.schema';
+import { Brand, BrandSchema } from './schemas/brand.schema';
 
 @Module({
   imports: [

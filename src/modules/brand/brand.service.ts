@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Brand, BrandDocument } from '../../database/schemas/brands.schema';
+import { Brand, BrandDocument } from '../../database/schemas/brand.schema';
 import { Model } from 'mongoose';
 import { IBrandDto, IGetBrandsDto } from './brand.dto';
 

@@ -3,9 +3,10 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { InjectModel } from '@nestjs/mongoose';
 import { Brand, BrandDocument } from './schemas/brand.schema';
-import { Model} from 'mongoose';
+import { Model } from 'mongoose';
+import { Category, CategoryDocument } from './schemas/category.schema';
 
-type InitDocumentsType = BrandDocument;
+type InitDocumentsType = BrandDocument | CategoryDocument;
 
 interface IDatabaseService {
   initializeAll(): Promise<void>;
@@ -17,10 +18,13 @@ interface IDatabaseService {
 export class DatabaseService implements IDatabaseService {
   constructor(
     @InjectModel(Brand.name) private readonly brandModel: Model<BrandDocument>,
+    @InjectModel(Category.name)
+    private readonly categoryModel: Model<CategoryDocument>,
   ) {}
 
   async initializeAll(): Promise<void> {
     await this.initialize(this.brandModel, 'brands.json');
+    await this.initialize(this.categoryModel, 'categories.json');
   }
 
   async initialize(

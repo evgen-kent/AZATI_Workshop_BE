@@ -6,6 +6,7 @@ import { Product, ProductSchema } from './schemas/product.schema';
 import { DatabaseService } from './database.service';
 import { Brand, BrandSchema } from './schemas/brand.schema';
 import { Category, CategorySchema } from './schemas/category.schema';
+import { Size, SizeSchema } from './schemas/size.schema';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { Category, CategorySchema } from './schemas/category.schema';
       { name: Product.name, schema: ProductSchema },
       { name: Brand.name, schema: BrandSchema },
       { name: Category.name, schema: CategorySchema },
+      { name: Size.name, schema: SizeSchema },
       // ...
     ]),
   ],

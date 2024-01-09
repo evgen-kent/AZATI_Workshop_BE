@@ -8,6 +8,7 @@ import { Category, CategoryDocument } from './schemas/category.schema';
 
 type InitDocumentsType = BrandDocument | CategoryDocument;
 
+
 interface IDatabaseService {
   initializeAll(): Promise<void>;
 

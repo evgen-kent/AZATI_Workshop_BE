@@ -8,7 +8,7 @@ import { Category, CategoryDocument } from './schemas/category.schema';
 import { Size, SizeDocument } from './schemas/size.schema';
 import { Color, ColorDocument } from './schemas/color.schema';
 
-type InitDocumentsType = BrandDocument | CategoryDocument | SizeDocument;
+type InitDocumentsType = BrandDocument | CategoryDocument | SizeDocument | ColorDocument;
 
 interface IDatabaseService {
   initializeAll(): Promise<void>;

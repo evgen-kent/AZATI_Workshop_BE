@@ -5,6 +5,7 @@ import { Optional } from '@nestjs/common';
 export type IUser = {
   id: string;
   email: string;
+  username:string;
   password?: string;
 };
 
@@ -17,6 +18,9 @@ export class User {
 
   @Prop({ required: true })
   password: string;
+
+  @Prop()
+  username: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

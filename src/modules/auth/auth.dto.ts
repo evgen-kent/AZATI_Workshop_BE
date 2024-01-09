@@ -4,6 +4,7 @@ import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 interface IAuthRequestDto {
   email: string;
   password: string;
+  username: string;
 }
 
 export class AuthRequestDto implements IAuthRequestDto {
@@ -14,6 +15,10 @@ export class AuthRequestDto implements IAuthRequestDto {
   @IsNotEmpty()
   @IsString()
   password: string;
+
+  @IsOptional()
+  @IsString()
+  username: string;
 }
 
 export interface IAuthResponseDto {

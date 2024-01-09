@@ -7,9 +7,10 @@ import { Model} from 'mongoose';
 
 type InitDocumentsType = BrandDocument;
 
+
 interface IDatabaseService {
   initializeAll(): Promise<void>;
-
+  
   initialize(collection: Model<InitDocumentsType>, from: string): Promise<void>;
 }
 

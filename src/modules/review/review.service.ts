@@ -2,11 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Review } from '../../database/schemas/review.schema';
 import { Model } from 'mongoose';
+import {
+  CreateReviewRequestDto,
+  GetReviewsQueryDto,
+  IGetReviewsResponseDto,
+  IReviewResponseDto,
+} from './review.dto';
 
 interface IReviewService {
-  getReviewsAsync(dto: any): Promise<any>;
+  getReviewsAsync(dto: GetReviewsQueryDto): Promise<IGetReviewsResponseDto>;
 
-  createReviewAsync(dto: any): Promise<any>;
+  createReviewAsync(dto: CreateReviewRequestDto): Promise<IReviewResponseDto>;
 }
 
 @Injectable()
@@ -15,11 +21,15 @@ export class ReviewService implements IReviewService {
     @InjectModel(Review.name) private readonly reviewModel: Model<Review>,
   ) {}
 
-  async getReviewsAsync(dto: any): Promise<any> {
+  async getReviewsAsync(
+    dto: GetReviewsQueryDto,
+  ): Promise<IGetReviewsResponseDto> {
     throw new Error('Method not implemented.');
   }
 
-  async createReviewAsync(dto: any): Promise<any> {
+  async createReviewAsync(
+    dto: CreateReviewRequestDto,
+  ): Promise<IReviewResponseDto> {
     throw new Error('Method not implemented.');
   }
 }

@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import * as path from 'path';
 import * as fs from 'fs';
 import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Color, ColorDocument } from './schemas/color.schema';
 
 type InitDocumentsType = any;
 
@@ -13,9 +15,13 @@ interface IDatabaseService {
 
 @Injectable()
 export class DatabaseService implements IDatabaseService {
-  constructor() {}
+  constructor(
+    @InjectModel(Color.name) private readonly colorModel: Model<ColorDocument>,
+  ) {}
 
-  async initializeAll(): Promise<void> {}
+  async initializeAll(): Promise<void> {
+    await this.initialize(this.colorModel, 'colors.json');
+  }
 
   async initialize(
     collection: Model<InitDocumentsType>,

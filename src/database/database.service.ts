@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import * as path from 'path';
 import * as fs from 'fs';
 import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Category, CategoryDocument } from './schemas/category.schema';
 
 type InitDocumentsType = any;
 
@@ -13,9 +15,14 @@ interface IDatabaseService {
 
 @Injectable()
 export class DatabaseService implements IDatabaseService {
-  constructor() {}
+  constructor(
+    @InjectModel(Category.name)
+    private readonly categoryModel: Model<CategoryDocument>,
+  ) {}
 
-  async initializeAll(): Promise<void> {}
+  async initializeAll(): Promise<void> {
+    await this.initialize(this.categoryModel,"categories.json")
+  }
 
   async initialize(
     collection: Model<InitDocumentsType>,

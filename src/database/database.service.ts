@@ -4,6 +4,8 @@ import * as fs from 'fs';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Size, SizeDocument } from './schemas/size.schema';
+import { Color, ColorDocument } from './schemas/color.schema';
+
 
 type InitDocumentsType = any;
 
@@ -17,11 +19,13 @@ interface IDatabaseService {
 export class DatabaseService implements IDatabaseService {
   constructor(
     @InjectModel(Size.name) private readonly sizeModel: Model<SizeDocument>,
+    @InjectModel(Color.name) private readonly colorModel: Model<ColorDocument>,
   ) {}
 
   async initializeAll(): Promise<void> {
     await this.initialize(this.sizeModel, 'sizes.json');
-  }
+    await this.initialize(this.colorModel, 'colors.json'); 
+  ) {}
 
   async initialize(
     collection: Model<InitDocumentsType>,

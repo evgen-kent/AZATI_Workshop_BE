@@ -4,6 +4,7 @@ import { ENV } from '../../config/env.interface';
 import { User, UserSchema } from './schemas/user.schema';
 import { Product, ProductSchema } from './schemas/product.schema';
 import { DatabaseService } from './database.service';
+import { Review, ReviewSchema } from './schemas/review.schema';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { DatabaseService } from './database.service';
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: Product.name, schema: ProductSchema },
+      { name: Review.name, schema: ReviewSchema },
       // ...
     ]),
   ],

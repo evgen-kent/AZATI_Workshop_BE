@@ -8,7 +8,11 @@ import { Category, CategoryDocument } from './schemas/category.schema';
 import { Size, SizeDocument } from './schemas/size.schema';
 import { Color, ColorDocument } from './schemas/color.schema';
 
-type InitDocumentsType = any;
+type InitDocumentsType =
+  | BrandDocument
+  | CategoryDocument
+  | SizeDocument
+  | ColorDocument;
 
 interface IDatabaseService {
   initializeAll(): Promise<void>;
@@ -30,8 +34,8 @@ export class DatabaseService implements IDatabaseService {
     await this.initialize(this.sizeModel, 'sizes.json');
     await this.initialize(this.colorModel, 'colors.json');
     await this.initialize(this.brandModel, 'brands.json');
-    await this.initialize(this.categoryModel,"categories.json")
-  ) {}
+    await this.initialize(this.categoryModel, 'categories.json');
+  }
 
   async initialize(
     collection: Model<InitDocumentsType>,

@@ -4,6 +4,7 @@ import { ENV } from '../../config/env.interface';
 import { User, UserSchema } from './schemas/user.schema';
 import { Product, ProductSchema } from './schemas/product.schema';
 import { DatabaseService } from './database.service';
+import { Brand, BrandSchema } from './schemas/brand.schema';
 import { Category, CategorySchema } from './schemas/category.schema';
 import { Size, SizeSchema } from './schemas/size.schema';
 import { Color, ColorSchema } from './schemas/color.schema';
@@ -18,6 +19,7 @@ import { Color, ColorSchema } from './schemas/color.schema';
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: Product.name, schema: ProductSchema },
+      { name: Brand.name, schema: BrandSchema },
       { name: Category.name, schema: CategorySchema },
       { name: Size.name, schema: SizeSchema },
       { name: Color.name, schema: ColorSchema },

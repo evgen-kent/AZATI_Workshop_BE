@@ -7,7 +7,9 @@ import { MulterModule } from '@nestjs/platform-express';
 import { ImagesController } from './modules/images/images.controller';
 import { ProductModule } from './modules/product/product.module';
 import { DatabaseModule } from './database/database.module';
+import { SizeModule } from './modules/size/size.module';
 import { ColorModule } from './modules/color/color.module';
+
 
 @Module({
   imports: [
@@ -16,6 +18,7 @@ import { ColorModule } from './modules/color/color.module';
     MulterModule.register({ dest: './files' }),
     ProductModule,
 
+    SizeModule,
     ColorModule,
   ],
   controllers: [AppController, ImagesController],

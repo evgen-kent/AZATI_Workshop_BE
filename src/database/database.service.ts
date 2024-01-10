@@ -4,6 +4,9 @@ import * as fs from 'fs';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Brand, BrandDocument } from './schemas/brand.schema';
+import { Category, CategoryDocument } from './schemas/category.schema';
+import { Size, SizeDocument } from './schemas/size.schema';
+import { Color, ColorDocument } from './schemas/color.schema';
 
 type InitDocumentsType = any;
 
@@ -16,12 +19,19 @@ interface IDatabaseService {
 @Injectable()
 export class DatabaseService implements IDatabaseService {
   constructor(
+    @InjectModel(Size.name) private readonly sizeModel: Model<SizeDocument>,
+    @InjectModel(Color.name) private readonly colorModel: Model<ColorDocument>,
     @InjectModel(Brand.name) private readonly brandModel: Model<BrandDocument>,
+    @InjectModel(Category.name)
+    private readonly categoryModel: Model<CategoryDocument>,
   ) {}
 
   async initializeAll(): Promise<void> {
+    await this.initialize(this.sizeModel, 'sizes.json');
+    await this.initialize(this.colorModel, 'colors.json');
     await this.initialize(this.brandModel, 'brands.json');
-  }
+    await this.initialize(this.categoryModel,"categories.json")
+  ) {}
 
   async initialize(
     collection: Model<InitDocumentsType>,

@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { SchemaTypes } from 'mongoose';
+import { Document, SchemaTypes } from 'mongoose';
 
 export interface IReview {
   user_id: string;

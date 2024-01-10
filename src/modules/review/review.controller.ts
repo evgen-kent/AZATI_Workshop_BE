@@ -7,7 +7,7 @@ import {
   IReviewResponseDto,
 } from './review.dto';
 
-@Controller('review')
+@Controller('reviews')
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
 

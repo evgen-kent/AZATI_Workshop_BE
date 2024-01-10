@@ -1,6 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Review } from '../../database/schemas/review.schema';
+import { Review, ReviewDocument } from '../../database/schemas/review.schema';
 import { Model } from 'mongoose';
 import {
   CreateReviewRequestDto,
@@ -8,6 +12,7 @@ import {
   IGetReviewsResponseDto,
   IReviewResponseDto,
 } from './review.dto';
+import { UserService } from '../user/user.service';
 
 interface IReviewService {
   getReviewsAsync(dto: GetReviewsQueryDto): Promise<IGetReviewsResponseDto>;
@@ -19,6 +24,7 @@ interface IReviewService {
 export class ReviewService implements IReviewService {
   constructor(
     @InjectModel(Review.name) private readonly reviewModel: Model<Review>,
+    private readonly userService: UserService,
   ) {}
 
   async getReviewsAsync(
@@ -30,6 +36,29 @@ export class ReviewService implements IReviewService {
   async createReviewAsync(
     dto: CreateReviewRequestDto,
   ): Promise<IReviewResponseDto> {
-    throw new Error('Method not implemented.');
+    try {
+      const createdReview = new this.reviewModel(dto);
+      const response = await this.processResponseAsync(createdReview);
+      await createdReview.save();
+      return response;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  private async processResponseAsync({
+    _id,
+    user_id,
+    product_id,
+    review,
+    rate,
+  }: ReviewDocument): Promise<IReviewResponseDto> {
+    return {
+      id: _id,
+      user: await this.userService.findUserByIdAsync(user_id),
+      product: null,
+      review,
+      rate,
+    };
   }
 }

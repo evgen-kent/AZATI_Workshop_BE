@@ -9,13 +9,15 @@ import { Model } from 'mongoose';
 import {
   CreateReviewRequestDto,
   GetReviewsQueryDto,
-  IGetReviewsResponseDto,
   IReviewResponseDto,
 } from './review.dto';
 import { UserService } from '../user/user.service';
+import { IPaginatedResponse } from '../../interfaces/paginated-response.interface';
 
 interface IReviewService {
-  getReviewsAsync(dto: GetReviewsQueryDto): Promise<IGetReviewsResponseDto>;
+  getReviewsAsync(
+    dto: GetReviewsQueryDto,
+  ): Promise<IPaginatedResponse<IReviewResponseDto[]>>;
 
   createReviewAsync(dto: CreateReviewRequestDto): Promise<IReviewResponseDto>;
 }
@@ -29,8 +31,28 @@ export class ReviewService implements IReviewService {
 
   async getReviewsAsync(
     dto: GetReviewsQueryDto,
-  ): Promise<IGetReviewsResponseDto> {
-    throw new Error('Method not implemented.');
+  ): Promise<IPaginatedResponse<IReviewResponseDto[]>> {
+    const startInt = parseInt(dto.start);
+    const limitInt = parseInt(dto.limit);
+    const filters = { product_id: dto.product_id ? dto.product_id : null };
+    const sortOption = dto.rate === 'asc' ? 1 : -1;
+    const reviews = await this.reviewModel
+      .find(filters)
+      .sort({ rate: sortOption })
+      .skip(startInt)
+      .limit(limitInt)
+      .exec();
+    const data = await Promise.all(
+      reviews.map(async (review) => {
+        return await this.processResponseAsync(review);
+      }),
+    );
+    return {
+      total: await this.reviewModel.countDocuments(filters),
+      start: startInt,
+      limit: limitInt,
+      data: data,
+    };
   }
 
   async createReviewAsync(

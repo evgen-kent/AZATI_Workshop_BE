@@ -3,33 +3,32 @@ import { Optional } from '@nestjs/common';
 import {
   IsNotEmpty,
   IsNumber,
-  IsNumberString, IsOptional,
+  IsNumberString,
+  IsOptional,
   IsString,
 } from 'class-validator';
 
 interface IGetReviewsQueryDto {
   rate: string; //asc || desc
+  start: string;
   limit: string;
   product_id: string;
 }
 
 export class GetReviewsQueryDto implements IGetReviewsQueryDto {
   @Optional()
-  @IsString()
   rate: string;
 
   @Optional()
-  @IsNumberString()
+  start: string;
+
+  @Optional()
   limit: string;
 
   @Optional()
-  @IsString()
   product_id: string;
 }
 
-export interface IGetReviewsResponseDto {
-  data: IReviewResponseDto;
-}
 
 interface ICreateReviewRequestDto {
   user_id: string;

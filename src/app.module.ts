@@ -11,6 +11,8 @@ import { BrandModule } from './modules/brand/brand.module';
 import { CategoryModule } from './modules/category/category.module';
 import { SizeModule } from './modules/size/size.module';
 import { ColorModule } from './modules/color/color.module';
+import { ReviewModule } from './modules/review/review.module';
+
 
 @Module({
   imports: [
@@ -23,6 +25,7 @@ import { ColorModule } from './modules/color/color.module';
     CategoryModule,
     SizeModule,
     ColorModule,
+    ReviewModule,
   ],
   controllers: [AppController, ImagesController],
   providers: [AppService],

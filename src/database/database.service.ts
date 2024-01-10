@@ -14,6 +14,7 @@ type InitDocumentsType =
   | SizeDocument
   | ColorDocument;
 
+
 interface IDatabaseService {
   initializeAll(): Promise<void>;
 

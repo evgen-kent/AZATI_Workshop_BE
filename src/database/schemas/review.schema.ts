@@ -1,24 +1,28 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { SchemaTypes } from 'mongoose';
 
 export interface IReview {
-  id: string;
   user_id: string;
   product_id: string | null;
   review: string;
+  rate: number;
 }
 
 export type ReviewDocument = Review & Document;
 
 @Schema()
 export class Review implements IReview {
-  @Prop()
-  id: string;
-  @Prop()
+  @Prop({ required: true })
   user_id: string;
-  @Prop()
+
+  @Prop({ type: SchemaTypes.String, default: null })
   product_id: string | null;
-  @Prop()
+
+  @Prop({ required: true })
   review: string;
+
+  @Prop({ min: 1, max: 5 })
+  rate: number;
 }
 
 export const ReviewSchema = SchemaFactory.createForClass(Review);

@@ -15,7 +15,7 @@ jobs:
 
       - name: Install fly CLI
         run: |
-          FLY_VERSION=$(curl -s https://api.github.com/repos/superfly/flyctl/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+          FLY_VERSION=$(curl -s https://api.github.com/repos/superfly/flyctl/releases/latest | grep -oP '"tag_name": "\K[^"]+')
           wget https://github.com/superfly/flyctl/releases/download/$FLY_VERSION/flyctl
           chmod +x flyctl
           sudo mv flyctl /usr/local/bin/

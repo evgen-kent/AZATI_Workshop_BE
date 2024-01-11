@@ -16,11 +16,11 @@ interface IProductService {
 
   getAllAsync(start: number, limit: number): Promise<ProductDocument[]>;
 
-  getByIdAsync(_id: string): Promise<ProductDocument>;
+  getByIdAsync(id: string): Promise<ProductDocument>;
 
-  deleteOneAsync(_id: string): Promise<{ result: string }>;
+  deleteOneAsync(id: string): Promise<{ result: string }>;
 
-  updateById(_id: string, payload: Partial<IProduct>): Promise<ProductDocument>;
+  updateById(id: string, payload: Partial<IProduct>): Promise<ProductDocument>;
 }
 
 @Injectable()
@@ -43,19 +43,21 @@ export class ProductService implements IProductService {
     return await this.productModel.find().skip(start).limit(limit).exec();
   }
 
-  async getByIdAsync(_id: string): Promise<ProductDocument> {
-    return this.productModel.findOne({ _id });
+  async getByIdAsync(id: string): Promise<ProductDocument> {
+    return this.productModel.findOne({ _id: id });
   }
 
-  async deleteOneAsync(_id: string): Promise<{ result: string }> {
-    await this.productModel.deleteOne({ _id });
+  async deleteOneAsync(id: string): Promise<{ result: string }> {
+    await this.productModel.deleteOne({ _id: id });
     return { result: 'ok' };
   }
 
   async updateById(
-    _id: string,
+    id: string,
     payload: Partial<IProduct>,
   ): Promise<ProductDocument> {
-    return this.productModel.findOneAndUpdate({ _id }, payload, { new: true });
+    return this.productModel.findOneAndUpdate({ _id: id }, payload, {
+      new: true,
+    });
   }
 }

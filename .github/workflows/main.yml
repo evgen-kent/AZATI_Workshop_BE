@@ -13,15 +13,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install jq
-        run: sudo apt-get install jq
-
       - name: Install fly CLI
         run: |
-          FLY_VERSION=$(curl -s https://api.github.com/repos/superfly/flyctl/releases/latest | jq -r .tag_name)
-          wget https://github.com/superfly/flyctl/releases/download/$FLY_VERSION/flyctl
-          chmod +x flyctl
-          sudo mv flyctl /usr/local/bin/
+          curl -L https://fly.io/install.sh | sh
 
       - name: Set up Docker Compose
         run: |

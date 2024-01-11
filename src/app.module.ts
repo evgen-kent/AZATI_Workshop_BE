@@ -7,6 +7,12 @@ import { MulterModule } from '@nestjs/platform-express';
 import { ImagesController } from './modules/images/images.controller';
 import { ProductModule } from './modules/product/product.module';
 import { DatabaseModule } from './database/database.module';
+import { BrandModule } from './modules/brand/brand.module';
+import { CategoryModule } from './modules/category/category.module';
+import { SizeModule } from './modules/size/size.module';
+import { ColorModule } from './modules/color/color.module';
+import { ReviewModule } from './modules/review/review.module';
+
 
 @Module({
   imports: [
@@ -14,9 +20,14 @@ import { DatabaseModule } from './database/database.module';
     UserModule,
     MulterModule.register({ dest: './files' }),
     ProductModule,
+
+    BrandModule,
+    CategoryModule,
+    SizeModule,
+    ColorModule,
+    ReviewModule,
   ],
   controllers: [AppController, ImagesController],
   providers: [AppService],
 })
-export class AppModule {
-}
+export class AppModule {}

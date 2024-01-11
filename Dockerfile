@@ -1,4 +1,4 @@
-FROM node:alpine AS development
+FROM node:20.10.0-alpine AS development
 
 WORKDIR /usr/src/app
 

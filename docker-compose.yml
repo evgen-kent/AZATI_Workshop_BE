@@ -1,16 +1,12 @@
-version: "3.7"
-services:
-  database:
-    image: mongo
-    container_name: workshop-back-mongo
-    environment:
-      - MONGO_DATA_DIR=/data/db
-      - MONGO_LOG_DIR=/dev/null
-    ports:
-      - 27017:27017
-    volumes:
-      - mongodb-data:/data/db
+version: "3"
+# unfortunatelly build from docker-compose.yml does not supported by Fly.io, 
+# but for future let's keep it there.
 
-volumes:
-  mongodb-data:
-    name: mongodb-data
+services:
+  service1:
+    container_name: workshop_azati_service
+    restart: always
+    build:
+      context: .
+    ports:
+      - "3000:5000"

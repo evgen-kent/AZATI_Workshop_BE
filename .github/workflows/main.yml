@@ -17,17 +17,6 @@ jobs:
         run: |
           curl -L https://fly.io/install.sh | sh
 
-      - name: Set up Docker Compose
-        run: |
-          rm ./docker-compose
-          curl -L https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m) -o ./docker-compose
-          chmod +x ./docker-compose
-
-      - name: Build and push Docker image
-        run: |
-          docker-compose up -d
-          docker-compose push
-
       - name: Deploy to Fly.io
         run: flyctl deploy
         env:

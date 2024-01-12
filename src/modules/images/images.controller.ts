@@ -14,7 +14,6 @@ import { diskStorage } from 'multer';
 import { editFileName, imageFileFilter } from '../../utils/file-upload-utils';
 
 @Controller('images')
-@UseGuards(JwtAuthGuard)
 export class ImagesController {
   constructor() {}
 

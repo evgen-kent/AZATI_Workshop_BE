@@ -6,7 +6,9 @@ import {
   Param,
   Post,
   Query,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   IProduct,
@@ -16,9 +18,12 @@ import { ProductService } from './product.service';
 import { Patch } from '@nestjs/common/decorators/http/request-mapping.decorator';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { IPaginatedResponse } from '../../interfaces/paginated-response.interface';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { editFileName, imageFileFilter } from '../../utils/file-upload-utils';
+import { CreateProductRequestDto, ICreateProductFiles, IProductResponseDto } from './product.dto';
 
 @Controller('product')
-@UseGuards(JwtAuthGuard)
 export class ProductController {
   constructor(private readonly productsService: ProductService) {}
 
@@ -35,13 +40,32 @@ export class ProductController {
   }
 
   @Get(':id')
-  getById(@Param('id') id: string): Promise<ProductDocument> {
+  getById(@Param('id') id: string): Promise<IProductResponseDto> {
     return this.productsService.getByIdAsync(id);
   }
 
   @Post()
-  createOne(@Body() body: IProduct): Promise<ProductDocument> {
-    return this.productsService.createOneAsync(body);
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'image', maxCount: 1 },
+        { name: 'additional_images', maxCount: 10 },
+      ],
+      {
+        storage: diskStorage({
+          destination: './files',
+          filename: editFileName,
+        }),
+        fileFilter: imageFileFilter,
+      },
+    ),
+  )
+  createOne(
+    @UploadedFiles()
+    files: ICreateProductFiles,
+    @Body() dto: CreateProductRequestDto,
+  ): Promise<IProductResponseDto> {
+    return this.productsService.createOneAsync(dto,files);
   }
 
   @Delete(':id')

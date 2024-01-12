@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Brand, BrandDocument } from '../../database/schemas/brand.schema';
 import { Model } from 'mongoose';
@@ -22,5 +22,13 @@ export class BrandService implements IBrandService {
 
   private processResponse({ _id, title }): IBrandDto {
     return { id: _id, title };
+  }
+
+  async findByIdAsync(id: string) {
+    try {
+      return this.brandModel.findById(id);
+    } catch (e) {
+      throw new BadRequestException(`Brand with id:${id} not found`);
+    }
   }
 }

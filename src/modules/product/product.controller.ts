@@ -40,7 +40,7 @@ export class ProductController {
   }
 
   @Get(':id')
-  getById(@Param('id') id: string): Promise<ProductDocument> {
+  getById(@Param('id') id: string): Promise<IProductResponseDto> {
     return this.productsService.getByIdAsync(id);
   }
 

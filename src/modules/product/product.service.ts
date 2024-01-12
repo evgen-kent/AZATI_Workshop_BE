@@ -19,12 +19,8 @@ import { ColorService } from '../color/color.service';
 import { SizeService } from '../size/size.service';
 import { BrandService } from '../brand/brand.service';
 import { CategoryService } from '../category/category.service';
-import { ICategoryDto } from '../category/category.dto';
-import { IBrandDto } from '../brand/brand.dto';
 import { IColorDto } from '../color/color.dto';
 import { ISizeDto } from '../size/size.dto';
-
-type CreateProductDTO = Exclude<IProduct, 'productId'>;
 
 interface IProductService {
   countAsync(): Promise<number>;
@@ -36,7 +32,7 @@ interface IProductService {
 
   getAllAsync(start: number, limit: number): Promise<ProductDocument[]>;
 
-  getByIdAsync(id: string): Promise<ProductDocument>;
+  getByIdAsync(id: string): Promise<IProductResponseDto>;
 
   deleteOneAsync(id: string): Promise<{ result: string }>;
 
@@ -61,7 +57,7 @@ export class ProductService implements IProductService {
   async createOneAsync(
     dto: CreateProductRequestDto,
     files: ICreateProductFiles,
-  ): Promise<any> {
+  ): Promise<IProductResponseDto> {
     const processedDto = await this.preProcessCreateProductRequestDtoAsync(
       dto,
       files,
@@ -79,8 +75,9 @@ export class ProductService implements IProductService {
     return await this.productModel.find().skip(start).limit(limit).exec();
   }
 
-  async getByIdAsync(id: string): Promise<ProductDocument> {
-    return this.productModel.findOne({ _id: id });
+  async getByIdAsync(id: string): Promise<IProductResponseDto> {
+    const product = await this.productModel.findById(id);
+    return await this.processResponseAsync(product);
   }
 
   async deleteOneAsync(id: string): Promise<{ result: string }> {
@@ -178,6 +175,7 @@ export class ProductService implements IProductService {
     const fullSizes = await this.makeFullSizesAsync(document);
 
     return {
+      id: document.id,
       title: document.title,
       description: document.description,
       cost: document.cost,

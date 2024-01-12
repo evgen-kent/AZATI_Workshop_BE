@@ -48,6 +48,7 @@ export class CreateProductRequestDto implements ICreateProductRequestDto {
 }
 
 export interface IProductResponseDto {
+  id: string;
   title: string;
   description: string;
   cost: number;

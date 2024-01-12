@@ -1,3 +1,7 @@
+# ENDPOINTS
+
+[<img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="width: 128px; height: 32px;">](https://app.getpostman.com/run-collection/21760073-a3c704f8-6609-46a7-b547-8c8933e9d9f8?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D21760073-a3c704f8-6609-46a7-b547-8c8933e9d9f8%26entityType%3Dcollection%26workspaceId%3D77726a00-3b55-44b9-93f1-abec8b36e911)
+
 # Deployment
 Building
 ```

@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, SchemaTypes } from 'mongoose';
-import { Optional } from '@nestjs/common';
 
 export interface IProduct {
   title: string;
@@ -10,10 +9,10 @@ export interface IProduct {
   total_cost: number;
   rate: number;
   category_id: string;
-  brands: string[];
+  brand_id: string;
   colors: { id: string; available: boolean }[];
   sizes: { id: string; available: boolean }[];
-  image: string;
+  image_path: string;
   additional_images: string[];
 }
 
@@ -43,7 +42,7 @@ export class Product implements IProduct {
   category_id: string;
 
   @Prop()
-  brands: string[];
+  brand_id: string;
 
   @Prop()
   colors: { id: string; available: boolean }[];
@@ -52,7 +51,7 @@ export class Product implements IProduct {
   sizes: { id: string; available: boolean }[];
 
   @Prop()
-  image: string;
+  image_path: string;
 
   @Prop()
   additional_images: string[];

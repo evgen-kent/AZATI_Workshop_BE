@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
@@ -12,7 +12,7 @@ import { CategoryModule } from './modules/category/category.module';
 import { SizeModule } from './modules/size/size.module';
 import { ColorModule } from './modules/color/color.module';
 import { ReviewModule } from './modules/review/review.module';
-
+import * as fs from 'fs';
 
 @Module({
   imports: [
@@ -30,4 +30,10 @@ import { ReviewModule } from './modules/review/review.module';
   controllers: [AppController, ImagesController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements OnModuleInit {
+  onModuleInit(): any {
+    if (!fs.existsSync('./files')) {
+      fs.mkdirSync('./files', { recursive: true });
+    }
+  }
+}

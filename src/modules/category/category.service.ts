@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   Category,
@@ -28,5 +28,13 @@ export class CategoryService implements ICategoryService {
 
   private processResponse({ _id, title }): ICategoryDto {
     return { id: _id, title };
+  }
+
+  async findByIdAsync(id: string) {
+    try {
+      return this.categoryModel.findById(id);
+    } catch (e) {
+      throw new BadRequestException(`Category with id:${id} not found`);
+    }
   }
 }

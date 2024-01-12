@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { IColorDto, IGetColorsDto } from './color.dto';
 import { Model, Promise } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -21,5 +21,13 @@ export class ColorService implements IColorService {
 
   private processResponse({ _id, title, hex }): IColorDto {
     return { id: _id, title, hex };
+  }
+
+  async findByIdAsync(id: string) {
+    try {
+      return this.colorModel.findById(id);
+    } catch (e) {
+      throw new BadRequestException(`Color with id:${id} not found`);
+    }
   }
 }

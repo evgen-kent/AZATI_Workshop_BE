@@ -21,6 +21,7 @@ import { IPaginatedResponse } from '../../interfaces/paginated-response.interfac
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { editFileName, imageFileFilter } from '../../utils/file-upload-utils';
+import { CreateProductRequestDto, ICreateProductFiles, IProductResponseDto } from './product.dto';
 
 @Controller('product')
 export class ProductController {
@@ -61,14 +62,10 @@ export class ProductController {
   )
   createOne(
     @UploadedFiles()
-    files: {
-      image: Express.Multer.File;
-      additional_images?: Express.Multer.File[];
-    },
-    @Body() body: any,
-  ): any {
-    console.log(files, body);
-    //return this.productsService.createOneAsync(body);
+    files: ICreateProductFiles,
+    @Body() dto: CreateProductRequestDto,
+  ): Promise<IProductResponseDto> {
+    return this.productsService.createOneAsync(dto,files);
   }
 
   @Delete(':id')

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Size, SizeDocument } from '../../database/schemas/size.schema';
 import { Model } from 'mongoose';
@@ -21,5 +21,13 @@ export class SizeService implements ISizeService {
 
   private processResponse({ _id, title, value }): ISizeDto {
     return { id: _id, title, value };
+  }
+
+  async findByIdAsync(id: string) {
+    try {
+      return this.sizeModel.findById(id);
+    } catch (e) {
+      throw new BadRequestException(`Size with id:${id} not found`);
+    }
   }
 }

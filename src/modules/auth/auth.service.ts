@@ -49,7 +49,7 @@ export class AuthService implements IAuthService {
   }
 
   private processResponse(user: UserDocument) {
-    const payload: JwtPayload = { id: user._id, email: user.email };
+    const payload: JwtPayload = { sub: user._id, email: user.email };
     return {
       user: this.userService.excludeSensitiveFields(user),
       token: { access_token: this.jwtService.sign(payload) },

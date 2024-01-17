@@ -62,7 +62,6 @@ export class UserService implements IUserService {
     return users.map(this.excludeSensitiveFields);
   }
 
-
   async getUsersPaginateAsync(
     start: string,
     limit: string,
@@ -84,6 +83,10 @@ export class UserService implements IUserService {
 
   async findUserByEmailAsync(email: string): Promise<UserDocument> {
     return this.userModel.findOne({ email });
+  }
+
+  async findByIdAsync(id: string): Promise<UserDocument> {
+    return this.userModel.findById(id);
   }
 
   async deleteUserByIdAsync(id: string): Promise<IDeleteUserResponseDto> {

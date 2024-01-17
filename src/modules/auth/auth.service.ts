@@ -1,6 +1,10 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserService } from '../user/user.service';
-import { AuthRequestDto, IAuthResponseDto } from './auth.dto';
+import { AuthRequestDto, IAuthResponseDto, IToken } from './auth.dto';
 import { PasswordService } from './password/password.service';
 import { TokenService } from './token/token.service';
 
@@ -16,8 +20,7 @@ export class AuthService implements IAuthService {
     private readonly userService: UserService,
     private readonly passwordService: PasswordService,
     private readonly tokenService: TokenService,
-  ) {
-  }
+  ) {}
 
   async loginAsync(dto: AuthRequestDto): Promise<IAuthResponseDto> {
     const user = await this.userService.findUserByEmailAsync(dto.email);
@@ -55,5 +58,19 @@ export class AuthService implements IAuthService {
       user: this.userService.excludeSensitiveFields(createdUser),
       token: tokens,
     };
+  }
+
+  async refreshAccessTokenAsync(refreshToken: string): Promise<IToken> {
+    const payload =
+      await this.tokenService.verifyRefreshTokenAsync(refreshToken);
+
+    const user = await this.userService.findByIdAsync(payload.sub);
+    if (!user) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    await this.tokenService.removeRefreshTokenAsync(refreshToken);
+
+    return this.tokenService.generateTokensAsync(user);
   }
 }

@@ -5,9 +5,10 @@ import { JwtAuthService } from '../jwt/jwt.auth.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Token, TokenDocument } from '../../../database/schemas/token.schema';
 import { Model } from 'mongoose';
+import { IToken } from '../auth.dto';
 
 interface ITokenService {
-  generateTokensAsync(user: UserDocument): Promise<any>;
+  generateTokensAsync(user: UserDocument): Promise<IToken>;
 
   verifyRefreshTokenAsync(refreshToken: string): Promise<JwtPayload>;
 
@@ -21,7 +22,7 @@ export class TokenService implements ITokenService {
     @InjectModel(Token.name) private readonly tokenModel: Model<TokenDocument>,
   ) {}
 
-  async generateTokensAsync(user: UserDocument): Promise<any> {
+  async generateTokensAsync(user: UserDocument): Promise<IToken> {
     const accessToken =
       await this.jwtAuthService.generateAccessTokenAsync(user);
     const refreshToken =
@@ -30,7 +31,7 @@ export class TokenService implements ITokenService {
     const tokenModel = new this.tokenModel({
       user_id: user.id,
       refresh_token: refreshToken,
-      created_at: Date.now(),
+      created_at: new Date(),
     });
 
     await tokenModel.save();
@@ -41,20 +42,13 @@ export class TokenService implements ITokenService {
     };
   }
 
-  async verifyRefreshTokenAsync(
-    refreshToken: string,
-  ): Promise<JwtPayload | any> {
-    const decoded =
-      await this.jwtAuthService.verifyRefreshTokenAsync(refreshToken);
-    const storedToken = await this.tokenModel.findOne({
-      refresh_token: refreshToken,
-    });
-
-    if (!storedToken || new Date() > storedToken.created_at) {
+  async verifyRefreshTokenAsync(refresh_token: string): Promise<any> {
+    try {
+      return await this.jwtAuthService.verifyRefreshTokenAsync(refresh_token);
+    } catch (error) {
+      await this.removeRefreshTokenAsync(refresh_token);
       throw new UnauthorizedException('Invalid refresh token');
     }
-
-    return decoded;
   }
 
   async removeRefreshTokenAsync(refreshToken: string): Promise<void> {

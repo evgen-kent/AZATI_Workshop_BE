@@ -1,10 +1,12 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserService } from '../user/user.service';
-import { JwtService } from '@nestjs/jwt';
-import { UserDocument } from '../../database/schemas/user.schema';
-import { AuthRequestDto, IAuthResponseDto } from './auth.dto';
-import { JwtPayload } from './jwt/jwt.strategy';
-import { PasswordService } from './password.service';
+import { AuthRequestDto, IAuthResponseDto, IToken } from './auth.dto';
+import { PasswordService } from './password/password.service';
+import { TokenService } from './token/token.service';
 
 interface IAuthService {
   loginAsync(dto: AuthRequestDto): Promise<IAuthResponseDto>;
@@ -15,9 +17,9 @@ interface IAuthService {
 @Injectable()
 export class AuthService implements IAuthService {
   constructor(
-    private userService: UserService,
-    private passwordService: PasswordService,
-    private jwtService: JwtService,
+    private readonly userService: UserService,
+    private readonly passwordService: PasswordService,
+    private readonly tokenService: TokenService,
   ) {}
 
   async loginAsync(dto: AuthRequestDto): Promise<IAuthResponseDto> {
@@ -34,7 +36,12 @@ export class AuthService implements IAuthService {
     if (!passwordIsValid) {
       throw new BadRequestException('Invalid password');
     }
-    return this.processResponse(user);
+
+    const tokens = await this.tokenService.generateTokensAsync(user);
+    return {
+      user: this.userService.excludeSensitiveFields(user),
+      token: tokens,
+    };
   }
 
   async signUpAsync(dto: AuthRequestDto): Promise<IAuthResponseDto> {
@@ -45,14 +52,25 @@ export class AuthService implements IAuthService {
       ...dto,
       password: hashedPassword,
     });
-    return this.processResponse(createdUser);
+
+    const tokens = await this.tokenService.generateTokensAsync(createdUser);
+    return {
+      user: this.userService.excludeSensitiveFields(createdUser),
+      token: tokens,
+    };
   }
 
-  private processResponse(user: UserDocument) {
-    const payload: JwtPayload = { id: user._id, email: user.email };
-    return {
-      user: this.userService.excludeSensitiveFields(user),
-      token: { access_token: this.jwtService.sign(payload) },
-    };
+  async refreshAccessTokenAsync(refreshToken: string): Promise<IToken> {
+    const payload =
+      await this.tokenService.verifyRefreshTokenAsync(refreshToken);
+
+    const user = await this.userService.findByIdAsync(payload.sub);
+    if (!user) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    await this.tokenService.removeRefreshTokenAsync(refreshToken);
+
+    return this.tokenService.generateTokensAsync(user);
   }
 }

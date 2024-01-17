@@ -23,5 +23,20 @@ export class AuthRequestDto implements IAuthRequestDto {
 
 export interface IAuthResponseDto {
   user: IUser;
-  token: { access_token: string };
+  token: IToken;
+}
+
+export interface IToken {
+  access_token: string;
+  refresh_token: string;
+}
+
+interface IRefreshTokenRequestDto {
+  refresh_token: string;
+}
+
+export class RefreshTokenRequestDto implements IRefreshTokenRequestDto {
+  @IsNotEmpty()
+  @IsString()
+  refresh_token: string;
 }

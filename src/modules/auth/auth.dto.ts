@@ -1,5 +1,6 @@
 import { IUser } from '../../database/schemas/user.schema';
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IToken } from './token/token.dto';
 
 interface IAuthRequestDto {
   email: string;
@@ -23,5 +24,5 @@ export class AuthRequestDto implements IAuthRequestDto {
 
 export interface IAuthResponseDto {
   user: IUser;
-  token: { access_token: string };
+  token: IToken;
 }

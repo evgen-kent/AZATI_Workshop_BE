@@ -1,7 +1,6 @@
 import { UserDocument } from '../../../database/schemas/user.schema';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtPayload } from '../jwt/jwt.strategy';
-import { UserService } from '../../user/user.service';
 import { JwtAuthService } from '../jwt/jwt.auth.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Token, TokenDocument } from '../../../database/schemas/token.schema';
@@ -18,7 +17,6 @@ interface ITokenService {
 @Injectable()
 export class TokenService implements ITokenService {
   constructor(
-    private readonly userService: UserService,
     private readonly jwtAuthService: JwtAuthService,
     @InjectModel(Token.name) private readonly tokenModel: Model<TokenDocument>,
   ) {}

@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserDocument } from '../../database/schemas/user.schema';
 import { AuthRequestDto, IAuthResponseDto } from './auth.dto';
 import { JwtPayload } from './jwt/jwt.strategy';
-import { PasswordService } from './password.service';
+import { PasswordService } from './password/password.service';
 
 interface IAuthService {
   loginAsync(dto: AuthRequestDto): Promise<IAuthResponseDto>;

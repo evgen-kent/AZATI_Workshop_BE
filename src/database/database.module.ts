@@ -9,6 +9,7 @@ import { Category, CategorySchema } from './schemas/category.schema';
 import { Size, SizeSchema } from './schemas/size.schema';
 import { Color, ColorSchema } from './schemas/color.schema';
 import { Review, ReviewSchema } from './schemas/review.schema';
+import { Token, TokenSchema } from './schemas/token.schema';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { Review, ReviewSchema } from './schemas/review.schema';
       { name: Size.name, schema: SizeSchema },
       { name: Color.name, schema: ColorSchema },
       { name: Review.name, schema: ReviewSchema },
+      { name: Token.name, schema: TokenSchema },
       // ...
     ]),
   ],
